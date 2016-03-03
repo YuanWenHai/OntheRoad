@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#111111">
+   <RelativeLayout
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:orientation="vertical"
+       android:layout_marginStart="20dp"
+       android:layout_marginTop="50dp"
+       android:id="@+id/profile_user_information">
+       <ImageView
+           android:layout_width="150dp"
+           android:layout_height="150dp"
+           android:src="@drawable/sakura"
+           android:scaleType="centerCrop"
+           android:id="@+id/profile_page_image"/>
+       <TextView
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="用户名"
+           android:textColor="#999999"
+           android:id="@+id/profile_page_name"
+           android:gravity="center"
+           android:textSize="18sp"
+           android:layout_below="@+id/profile_page_image"
+           android:layout_alignEnd="@+id/profile_page_image" />
+   </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="25dp"
+        android:layout_below="@id/profile_user_information">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="清除缓存"
+            android:textSize="22sp"
+            android:textColor="#999999"
+            android:id="@+id/profile_page_clear_cache"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:layout_marginTop="30dp"
+            android:text="修改密码"
+            android:textColor="#999999"
+            android:id="@+id/profile_page_change_password"/>
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:text="退出登录"
+        android:textColor="#999999"
+        android:id="@+id/profile_page_logout"
+        android:layout_marginBottom="25dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/profile_user_information" />
+
+</RelativeLayout>

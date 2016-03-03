@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/include_confirm_back_title_bar"/>
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/sakura"
+        android:id="@+id/add_goal_page_image"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerCrop"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="标题"
+        android:id="@+id/add_goal_page_edit_title"
+        android:singleLine="true"
+        android:layout_marginTop="20dp"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="简介"
+        android:id="@+id/add_goal_page_edit_content"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="将要成为的人"
+        android:textSize="18sp"
+        android:layout_marginTop="75dp"
+        android:layout_marginStart="10dp"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="想成为什么样的人呢？想个酷炫的名字吧"
+        android:id="@+id/add_goal_page_edit_become"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="设定完成日期"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp"
+        android:layout_marginStart="10dp"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="例如20160805"
+        android:id="@+id/add_goal_page_edit_target_date" />
+</LinearLayout>
