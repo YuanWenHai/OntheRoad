@@ -38,6 +38,13 @@
         <activity android:name=".activities.ChangePasswordActivity"
             android:launchMode="singleTask">
         </activity>
+        <activity android:name=".activities.GoalActivity"
+            android:launchMode="singleTask">
+        </activity>
+        <activity android:name=".activities.AddDiaryActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateHidden">
+        </activity>
 
     </application>
 

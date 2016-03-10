@@ -21,6 +21,7 @@ import com.will.ontheroad.bean.MyUser;
 import com.will.ontheroad.popup.QuickPopup;
 import com.will.ontheroad.utility.DownloadImageListener;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -28,11 +29,13 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.GetListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * Created by Will on 2016/2/27.
  */
-public class MainActivity extends BaseActivity implements View.OnClickListener,AdapterView.OnItemClickListener{
+public class MainActivity extends BaseActivity implements View.OnClickListener,AdapterView.OnItemClickListener,
+        AdapterView.OnItemLongClickListener{
     private QuickAdapter<Goal> goalAdapter;
     private ListView listView;
     private TextView userName;
@@ -50,6 +53,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     private QuickPopup profilePopup;
     private ImageView profileImage;
     private TextView profileName;
+    private String myGoalId;
+    private QuickPopup markPopup;
     //TextView profileSetImage;
     //TextView profileSetName;
     //TextView profileChangePassword;
@@ -67,7 +72,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     private void queryGoal(int mode){
         BmobQuery<Goal> query = new BmobQuery<>();
         if(mode == CACHE_FIRST){
-            query.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);
+            query.setCachePolicy(BmobQuery.CachePolicy.CACHE_THEN_NETWORK);
         }else{
             query.setCachePolicy(BmobQuery.CachePolicy.NETWORK_ELSE_CACHE);
         }
@@ -83,7 +88,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 }
                 goalAdapter.addAll(list);
             }
-
             @Override
             public void onError(int i, String s) {
                 showToast("错误码：" + i + "错误信息：" + s);
@@ -102,13 +106,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         note = (Button) findViewById(R.id.main_page_note);
         userLayout.setOnClickListener(this);
         listView.setOnItemClickListener(this);
+        listView.setOnItemLongClickListener(this);
         addGoal.setOnClickListener(this);
         note.setOnClickListener(this);
     }
     private void queryUser(){
         user = BmobUser.getCurrentUser(this,MyUser.class);
         if(user == null){
-            //注册页面
+            startActivity(new Intent(this,LoginActivity.class));
+            finish();
         }else{
             if(user.getUserImageThumbnail() != null){
                 try{
@@ -140,8 +146,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 @Override
                 public void onSuccess(Goal goal) {
                     date.setText("今天是" + getFormattedDateCorrectToDay(new Date(System.currentTimeMillis())));
-                    become.setText(goal.getBecome());
+                    become.setText("距离成为"+goal.getBecome()+"还有");
                     leftHour.setText(countDateHour(goal.getAchievementDate()));
+                    showToast(countDateHour(goal.getAchievementDate()));
                 }
                 @Override
                 public void onFailure(int i, String s) {
@@ -161,16 +168,58 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 break;
             case R.id.main_page_note:
                 //添加心情;
+                startActivity(new Intent(this,AddDiaryActivity.class));
                 break;
             case R.id.profile_user_information:
                 startActivity(new Intent(this,UserInformationActivity.class));
                 profilePopup.dismiss();
                 break;
+            case R.id.profile_page_change_password:
+                startActivity(new Intent(MainActivity.this, ChangePasswordActivity.class));
+                profilePopup.dismiss();
+                break;
+            case R.id.profile_page_clear_cache:
+                spEditor.clear();
+                spEditor.commit();
+                deleteDirectoryContent(getFilesDir().getPath() + "/thumbnail");
+                showToast("已清除缓存");
+                break;
+            case R.id.profile_page_logout:
+                BmobUser.logOut(this);
+                startActivity(new Intent(this, LoginActivity.class));
+                finish();
+                break;
+            case R.id.popup_mark:
+                markPopup.dismiss();
+                user.setMyGoalId(myGoalId);
+                user.update(this, new UpdateListener() {
+                    @Override
+                    public void onSuccess() {
+                        queryTextContent();
+                    }
+                    @Override
+                    public void onFailure(int i, String s) {}
+                });
         }
     }
     @Override
     public void onItemClick(AdapterView<?> parent,View view ,int position,long id){
-        //进入相应的目标主界面
+        Intent intent  = new Intent(this,GoalActivity.class);
+        intent.putExtra("goal",list.get(position).getObjectId());
+        startActivity(intent);
+    }
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent,View view ,int position,long id){
+        myGoalId = list.get(position).getObjectId();
+        View v = View.inflate(this,R.layout.popup_mark,null);
+        LinearLayout layout = (LinearLayout) v.findViewById(R.id.popup_mark);
+        layout.setOnClickListener(this);
+        markPopup = new QuickPopup(v,dpToPx(this,150),dpToPx(this,50));
+        markPopup.setAnimationStyle(R.style.alphaAnimation);
+        int[] i = new int[2];
+        view.getLocationOnScreen(i);
+        markPopup.showAtLocation(listView, Gravity.TOP | Gravity.RIGHT, i[0], i[1]);
+        return true;
     }
     private void initializeAdapter() {
         if (goalAdapter == null) {
@@ -194,7 +243,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
             };
             listView.setAdapter(goalAdapter);
         }
-        queryGoal(NETWORK_FIRST);
+        queryGoal(CACHE_FIRST);
     }
     private void showProfilePopup(){
         View view = View.inflate(this,R.layout.profile_page,null);
@@ -216,7 +265,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         profileUserInformation.setOnClickListener(this);
         TextView profileChangePassword = (TextView) view.findViewById(R.id.profile_page_change_password);
         TextView profileLogout = (TextView) view.findViewById(R.id.profile_page_logout);
-        TextView profileClearCache = (TextView) findViewById(R.id.profile_page_clear_cache);
+        TextView profileClearCache = (TextView) view.findViewById(R.id.profile_page_clear_cache);
         profileChangePassword.setOnClickListener(this);
         profileLogout.setOnClickListener(this);
         profileClearCache.setOnClickListener(this);
@@ -232,5 +281,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
             queryUser();
         }
     }
+    private void deleteDirectoryContent(String path){
+        File directory = new File(path);
+        final File[] files = directory.listFiles();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(File file :files){
+                    file.delete();
+                }
+            }
+        }).start();
+    }
+    private void showMarkPopup(){
 
+    }
 }

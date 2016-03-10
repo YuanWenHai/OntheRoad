@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="100dp"
+    android:layout_height="wrap_content"
+    android:background="#dddddd">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="编辑"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:id="@+id/goal_page_popup_edit_goal"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="删除"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:id="@+id/goal_page_popup_delete_goal"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="排序"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:id="@+id/goal_page_popup_order_goal"/>
+
+</LinearLayout>

@@ -2,6 +2,7 @@ package com.will.ontheroad.activities;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -11,10 +12,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.will.ontheroad.R;
 import com.will.ontheroad.bean.Goal;
 import com.will.ontheroad.bean.MyUser;
+import com.will.ontheroad.utility.DownloadImageListener;
 
 import java.io.File;
 import java.text.ParseException;
@@ -26,7 +29,9 @@ import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.ThumbnailUrlListener;
+import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
+import cn.qqtheme.framework.picker.DatePicker;
 
 /**
  * Created by Will on 2016/2/28.
@@ -34,7 +39,7 @@ import cn.bmob.v3.listener.UploadFileListener;
 public class AddGoalActivity extends BaseActivity implements View.OnClickListener {
     private EditText titleEdit;
     private EditText contentEdit;
-    private EditText dateEdit;
+    private TextView dateText;
     private EditText becomeEdit;
     private ImageView imageView;
     private String filePath;
@@ -43,24 +48,46 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
     private Button  confirm;
     private String preImageUrl;
     private String preThumbnailUrl;
+    private Intent receivedIntent;
+    private String pickedDate;
+    private Boolean isEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_goal_page);
-        initializeViews();
         myGoal = new Goal();
+        receivedIntent = getIntent();
+        initializeViews();
     }
 
     private void initializeViews() {
         titleEdit = (EditText) findViewById(R.id.add_goal_page_edit_title);
         contentEdit = (EditText) findViewById(R.id.add_goal_page_edit_content);
-        dateEdit = (EditText) findViewById(R.id.add_goal_page_edit_target_date);
+        dateText = (TextView) findViewById(R.id.add_goal_page_date_text);
         becomeEdit = (EditText) findViewById(R.id.add_goal_page_edit_become);
         imageView = (ImageView) findViewById(R.id.add_goal_page_image);
+        if(receivedIntent.getBooleanExtra("edit",false)){
+            pickedDate = receivedIntent.getStringExtra("date");
+            titleEdit.setText(receivedIntent.getStringExtra("title"));
+            dateText.setText(pickedDate);
+            becomeEdit.setText(receivedIntent.getStringExtra("become"));
+            if(receivedIntent.getStringExtra("content") != null){
+                contentEdit.setText(receivedIntent.getStringExtra("content"));
+            }
+            if(receivedIntent.getStringExtra("image") != null){
+                downloadImage(this, receivedIntent.getStringExtra("image"), new DownloadImageListener() {
+                    @Override
+                    public void onSuccess(String localImagePath) {
+                        imageView.setImageDrawable(Drawable.createFromPath(localImagePath));
+                    }
+                });
+            }
+        }
         progressBar = (ProgressBar) findViewById(R.id.confirm_back_title_bar_progress);
         confirm = (Button) findViewById(R.id.add_goal_page_button_confirm);
         Button back = (Button) findViewById(R.id.add_goal_page_button_back);
+        dateText.setOnClickListener(this);
         confirm.setOnClickListener(this);
         back.setOnClickListener(this);
         imageView.setOnClickListener(this);
@@ -71,22 +98,38 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_goal_page_button_back:
-                startActivity(new Intent(this, MainActivity.class));
+                onBackPressed();
                 break;
             case R.id.add_goal_page_image:
                 startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), 1);
                 break;
+            case R.id.add_goal_page_date_text:
+                if(!receivedIntent.getBooleanExtra("edit",false)){
+                    DatePicker picker = new DatePicker(this, DatePicker.YEAR_MONTH_DAY);
+                    picker.setRange(2016, 2099);
+                    picker.setOnDatePickListener(new DatePicker.OnYearMonthDayPickListener() {
+                        @Override
+                        public void onDatePicked(String year, String month, String day) {
+                            pickedDate = year + "-" + month + "-" + day;
+                            dateText.setText(pickedDate);
+                        }
+                    });
+                    picker.show();
+                }else{
+                    showToast("这个无法修改啦");
+                }
+                break;
             case R.id.add_goal_page_button_confirm:
                 String title = titleEdit.getText().toString();
                 String content = contentEdit.getText().toString();
-                String date = dateEdit.getText().toString();
+                //String date = dateEdit.getText().toString();
                 String become =becomeEdit.getText().toString();
-                if(title.isEmpty()|| date.isEmpty()|| become.isEmpty()){
+                if(title.isEmpty()|| pickedDate == null|| become.isEmpty()){
                     showToast("请完善内容");
                 }else{
                     try{
-                        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd", Locale.CHINA);
-                        Date uploadDate = format.parse(date);
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+                        Date uploadDate = format.parse(pickedDate);
                         myGoal.setAchievementDate(uploadDate);
                     }catch (ParseException p){
                         p.printStackTrace();
@@ -101,6 +144,7 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
                     myGoal.setCreateDate(new Date(System.currentTimeMillis()));
                     myGoal.setUpdateDate(new Date(System.currentTimeMillis()));
                     myGoal.setUser(BmobUser.getCurrentUser(this, MyUser.class));
+                    if(!receivedIntent.getBooleanExtra("edit",false)){
                     myGoal.save(this, new SaveListener() {
                         @Override
                         public void onSuccess() {
@@ -108,6 +152,7 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
                             Intent intent = new Intent(AddGoalActivity.this,MainActivity.class);
                             intent.putExtra("refresh_goal",true);
                             startActivity(intent);
+                            finish();
                         }
 
                         @Override
@@ -115,6 +160,20 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
                             showToast("错误码:" + i + "错误信息" + s);
                         }
                     });
+                    }else{
+                        myGoal.update(AddGoalActivity.this, receivedIntent.getStringExtra("objectId"), new UpdateListener() {
+                            @Override
+                            public void onSuccess() {
+                                Intent intent = new Intent(AddGoalActivity.this,GoalActivity.class);
+                                intent.putExtra("refresh",true);
+                                startActivity(intent);
+                            }
+                            @Override
+                            public void onFailure(int i, String s) {
+                                showToast(s);
+                            }
+                        });
+                    }
                 }
         }
     }

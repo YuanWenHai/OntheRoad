@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.will.ontheroad.R;
 
@@ -24,6 +25,9 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
         initializeViews();
     }
     private void initializeViews(){
+        TextView barText = (TextView) findViewById(R.id.bar_text);
+        barText.setText("修改密码");
+        barText.setVisibility(View.VISIBLE);
         originalPassword = (EditText) findViewById(R.id.change_password_page_origin);
         newPassword1 = (EditText) findViewById(R.id.change_password_page_new1);
         newPassword2 = (EditText) findViewById(R.id.change_password_page_new2);
@@ -55,7 +59,11 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
                         }
                         @Override
                         public void onFailure(int i, String s) {
-                            showToast("s");
+                            if(i ==210){
+                                showToast("原始密码输入错误");
+                            }else{
+                                showToast("error code:"+i+"\n"+s);
+                            }
                         }
                     });
                 }

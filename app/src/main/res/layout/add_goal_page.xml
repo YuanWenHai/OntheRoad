@@ -19,16 +19,16 @@
         android:layout_marginTop="20dp"/>
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="120dp"
         android:layout_marginTop="8dp"
         android:hint="简介"
-        android:id="@+id/add_goal_page_edit_content"/>
+        android:id="@+id/add_goal_page_edit_content"
+        android:gravity="start"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="将要成为的人"
         android:textSize="18sp"
-        android:layout_marginTop="75dp"
         android:layout_marginStart="10dp"/>
     <EditText
         android:layout_width="match_parent"
@@ -42,9 +42,15 @@
         android:layout_marginTop="8dp"
         android:textSize="18sp"
         android:layout_marginStart="10dp"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="例如20160805"
-        android:id="@+id/add_goal_page_edit_target_date" />
+   <TextView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="8dp"
+       android:textSize="20sp"
+       android:layout_marginStart="10dp"
+       android:drawableEnd="@drawable/date_picker"
+       android:text="未设定日期"
+       android:gravity="center"
+       android:id="@+id/add_goal_page_date_text"/>
+
 </LinearLayout>

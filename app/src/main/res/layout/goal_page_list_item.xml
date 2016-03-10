@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp">
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/sakura"
+            android:scaleType="centerCrop"
+            android:id="@+id/goal_page_list_item_image"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="will"
+            android:textSize="18sp"
+            android:id="@+id/goal_page_list_item_name"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/goal_page_list_item_image"
+            android:layout_marginStart="10dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2016-1-1 11:40"
+            android:layout_below="@+id/goal_page_list_item_name"
+            android:layout_alignStart="@+id/goal_page_list_item_name"
+            android:layout_marginTop="5dp"
+            android:id="@+id/goal_page_list_item_time" />
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/more"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/goal_page_list_item_more"/>
+    </RelativeLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/splash1"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:id="@+id/goal_page_content_image"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="的进口量法焦点科技进口量的副书记浮空连束带结发流口水的解放路快圣诞节弗兰克束带结发"
+        android:textSize="20sp"
+        android:id="@+id/goal_page_list_item_content"
+        android:layout_margin="10dp"/>
+</LinearLayout>

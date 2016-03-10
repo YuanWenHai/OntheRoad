@@ -36,7 +36,6 @@ public class BaseActivity extends Activity {
     private String BMOB_APPID = "02c0cb3d206b649c517d0cd2b663e9c4";
     protected SharedPreferences.Editor spEditor;
     protected SharedPreferences sp;
-    //protected ImageUtility imageUtility = new ImageUtility();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,8 +72,8 @@ public class BaseActivity extends Activity {
         GregorianCalendar date2 = new GregorianCalendar();
         date1.setTime(targetDate);
         date2.setTime(currentDate);
-        int hourNumber = (int) (date1.getTimeInMillis() - date2.getTimeInMillis()) / (1000 * 3600);
-        return String.valueOf((hourNumber));
+        float hourNumber =  (date1.getTimeInMillis() - date2.getTimeInMillis()) / (1000 * 3600);
+        return String.valueOf((int)(hourNumber));
     }
 
     public String getFormattedDateCorrectToDay(Date date) {
@@ -89,7 +88,7 @@ public class BaseActivity extends Activity {
         return (int) (context.getResources().getDisplayMetrics().density * dp + 0.5f);
     }
     //下载图片并缓存，如有缓存则直接返回缓存path
-    public void downloadImage( Context context, final String url, final DownloadImageListener listener){
+    public  void downloadImage( Context context, final String url, final DownloadImageListener listener){
         final String dir = context.getFilesDir()+"/thumbnail";
         final SharedPreferences sp = context.getSharedPreferences("cache",Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sp.edit();

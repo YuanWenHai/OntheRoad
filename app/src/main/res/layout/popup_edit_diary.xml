@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="200dp"
+    android:layout_height="40dp"
+    android:background="@drawable/popup_bg"
+    android:baselineAligned="false">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="编辑"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textColor="#aaaaaa"
+            android:drawableStart="@drawable/popup_edit"
+            android:id="@+id/goal_page_popup_edit"
+            android:padding="10dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="删除"
+            android:textColor="#aaaaaa"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:drawableStart="@drawable/popup_delete"
+            android:id="@+id/goal_page_popup_delete" />
+    </LinearLayout>
+
+</LinearLayout>

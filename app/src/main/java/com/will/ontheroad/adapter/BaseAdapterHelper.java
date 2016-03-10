@@ -85,7 +85,7 @@ public class BaseAdapterHelper {
 
     /** This method is package private and should only be used by QuickAdapter. */
     static BaseAdapterHelper get(Context context, View convertView, ViewGroup parent, int layoutId, int position) {
-        if (convertView == null) {
+        if (convertView == null  || convertView.getTag() == null) {
             return new BaseAdapterHelper(context, parent, layoutId, position);
         }
         return (BaseAdapterHelper) convertView.getTag();
@@ -357,6 +357,9 @@ public class BaseAdapterHelper {
             views.put(viewId, view);
         }
         return (T) view;
+    }
+    public void setPosition(int position){
+        this.position = position;
     }
 
 }
