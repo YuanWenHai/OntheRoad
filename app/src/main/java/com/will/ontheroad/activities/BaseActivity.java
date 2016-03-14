@@ -1,17 +1,19 @@
 package com.will.ontheroad.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Window;
+import android.util.LruCache;
 import android.widget.Toast;
 
 import com.will.ontheroad.utility.DownloadImageListener;
+import com.will.ontheroad.utility.MyCache;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,18 +31,18 @@ import cn.bmob.v3.Bmob;
 /**
  * Created by Will on 2016/2/26.
  */
-public class BaseActivity extends Activity {
+public class BaseActivity extends AppCompatActivity {
     protected int mScreenWidth;
     protected int mScreenHeight;
     private Toast mToast;
     private String BMOB_APPID = "02c0cb3d206b649c517d0cd2b663e9c4";
     protected SharedPreferences.Editor spEditor;
     protected SharedPreferences sp;
-
+    protected LruCache<String, Drawable> lru;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bmob.initialize(this, BMOB_APPID);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         mScreenWidth = metrics.widthPixels;
@@ -66,7 +68,14 @@ public class BaseActivity extends Activity {
         return rect.top;
     }
 
-    public String countDateHour(Date targetDate) {
+    public String countDateHour(String target) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA);
+        Date targetDate = null;
+        try{
+            targetDate = format.parse(target);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         Date currentDate = new Date(System.currentTimeMillis());
         GregorianCalendar date1 = new GregorianCalendar();
         GregorianCalendar date2 = new GregorianCalendar();
@@ -89,11 +98,21 @@ public class BaseActivity extends Activity {
     }
     //下载图片并缓存，如有缓存则直接返回缓存path
     public  void downloadImage( Context context, final String url, final DownloadImageListener listener){
+        if(lru == null){
+            lru = MyCache.getInstance().getLru();
+        }
         final String dir = context.getFilesDir()+"/thumbnail";
         final SharedPreferences sp = context.getSharedPreferences("cache",Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sp.edit();
         if(sp.contains(url)){
-            listener.onSuccess(sp.getString(url, ""));
+            Drawable drawable = lru.get(url);
+            if(drawable == null){
+                drawable = Drawable.createFromPath(sp.getString(url, ""));
+                listener.onSuccess(drawable);
+                lru.put(url,drawable);
+            }else{
+                listener.onSuccess(lru.get(url));
+            }
         }else{
             new Thread(new Runnable() {
                 @Override
@@ -124,7 +143,9 @@ public class BaseActivity extends Activity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onSuccess(image.getPath());
+                                Drawable drawable = Drawable.createFromPath(image.getPath());
+                                listener.onSuccess(drawable);
+                                lru.put(url,drawable);
                             }
                         });
 

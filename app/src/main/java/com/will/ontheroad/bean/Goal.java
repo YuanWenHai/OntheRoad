@@ -10,11 +10,11 @@ import cn.bmob.v3.BmobObject;
 public class Goal extends BmobObject {
     private String name;
     private Date createDate;
-    private Date updateDate;
+    private String updateDate;
     private String imageFileName;
     private String presentation;
     private MyUser user;
-    private Date achievementDate;
+    private String achievementDate;
     private String become;
     private String imageThumbnail;
     public void setName(String name){
@@ -29,10 +29,10 @@ public class Goal extends BmobObject {
     public Date getCreateDate(){
         return createDate;
     }
-    public void setUpdateDate(Date updateDate){
+    public void setUpdateDate(String updateDate){
         this.updateDate = updateDate;
     }
-    public Date getUpdateDate(){
+    public String getUpdateDate(){
         return updateDate;
     }
     public void setImageFileName(String imageFileName){
@@ -53,10 +53,10 @@ public class Goal extends BmobObject {
     public MyUser getUser(){
         return user;
     }
-    public void setAchievementDate(Date achievementDate){
+    public void setAchievementDate(String achievementDate){
         this.achievementDate = achievementDate;
     }
-    public Date getAchievementDate(){
+    public String getAchievementDate(){
         return achievementDate;
     }
     public void setBecome(String become){

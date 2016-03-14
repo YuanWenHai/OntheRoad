@@ -9,7 +9,7 @@
         android:id="@+id/add_goal_page_button_back"
         android:background="@drawable/btn_back_selector"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"/>
+        android:layout_marginStart="10dp"/>
     <Button
         android:layout_width="40dp"
         android:layout_height="40dp"

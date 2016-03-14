@@ -9,34 +9,40 @@
         android:id="@+id/main_page_item_image"
         android:layout_centerVertical="true"
         android:scaleType="centerCrop"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="学习编程"
-        android:textSize="28sp"
-        android:layout_alignTop="@+id/main_page_item_image"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_toEndOf="@+id/main_page_item_image"
-        android:layout_marginStart="73dp"
-        android:id="@+id/main_page_item_goal" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="始于2016年1月1日"
-        android:textSize="18sp"
-        android:textColor="#555555"
-        android:id="@+id/main_page_item_begin_date"
-        android:layout_centerVertical="true"
-        android:layout_alignStart="@+id/main_page_item_goal" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="上次更新于2016年2月26日"
-        android:textSize="18sp"
-        android:textColor="#555555"
-        android:id="@+id/main_page_item_last_update_date"
-        android:layout_below="@+id/main_page_item_begin_date"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="10dp"/>
+        android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="学习编程"
+                android:textSize="28sp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/main_page_item_goal"
+                android:layout_marginTop="8dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="一些简介"
+                android:textSize="18sp"
+                android:textColor="#555555"
+                android:id="@+id/main_page_item_presentation"
+                android:visibility="visible"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="上次更新于2016年2月26日"
+                android:textSize="14sp"
+                android:textColor="#555555"
+                android:id="@+id/main_page_item_last_update_date"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"/>
+    </RelativeLayout>
 
 
 </RelativeLayout>

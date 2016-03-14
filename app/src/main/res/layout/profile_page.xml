@@ -2,63 +2,83 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#111111">
+    android:background="#ffffff">
    <RelativeLayout
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
+       android:layout_width="match_parent"
+       android:layout_height="240dp"
        android:orientation="vertical"
-       android:layout_marginStart="20dp"
-       android:layout_marginTop="50dp"
-       android:id="@+id/profile_user_information">
-       <ImageView
-           android:layout_width="150dp"
-           android:layout_height="150dp"
+       android:id="@+id/profile_user_information"
+       android:layout_alignParentEnd="true"
+       android:layout_alignParentStart="true"
+       android:background="@drawable/profile_bg">
+       <de.hdodenhof.circleimageview.CircleImageView
+           android:layout_width="120dp"
+           android:layout_height="120dp"
            android:src="@drawable/sakura"
-           android:scaleType="centerCrop"
-           android:id="@+id/profile_page_image"/>
+           android:layout_marginStart="33dp"
+           android:id="@+id/profile_page_image"
+           android:layout_centerVertical="true" />
        <TextView
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:text="用户名"
-           android:textColor="#999999"
+           android:textColor="#eeeeee"
            android:id="@+id/profile_page_name"
            android:gravity="center"
            android:textSize="18sp"
            android:layout_below="@+id/profile_page_image"
-           android:layout_alignEnd="@+id/profile_page_image" />
+           android:layout_alignEnd="@+id/profile_page_image"
+           android:layout_alignStart="@+id/profile_page_image"
+           android:layout_marginTop="15dp"/>
    </RelativeLayout>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="25dp"
-        android:layout_below="@id/profile_user_information">
+        android:id="@+id/linearLayout2"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/profile_user_information">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="清除缓存"
-            android:textSize="22sp"
-            android:textColor="#999999"
-            android:id="@+id/profile_page_clear_cache"/>
+            android:textSize="18sp"
+            android:textColor="#111111"
+            android:drawableStart="@drawable/clear_cache"
+            android:gravity="center"
+            android:drawablePadding="30dp"
+            android:id="@+id/profile_page_clear_cache"
+            android:layout_marginTop="30dp"
+            android:layout_marginStart="20dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:layout_marginTop="30dp"
+            android:textSize="18sp"
             android:text="修改密码"
-            android:textColor="#999999"
-            android:id="@+id/profile_page_change_password"/>
-    </LinearLayout>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="22sp"
-        android:text="退出登录"
-        android:textColor="#999999"
-        android:id="@+id/profile_page_logout"
-        android:layout_marginBottom="25dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/profile_user_information" />
+            android:drawableStart="@drawable/change_password"
+            android:gravity="center"
+            android:drawablePadding="30dp"
+            android:textColor="#111111"
+            android:layout_marginTop="15dp"
+            android:id="@+id/profile_page_change_password"
+            android:layout_below="@+id/profile_page_clear_cache"
+            android:layout_alignStart="@+id/profile_page_clear_cache" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="退出登录"
+            android:drawableStart="@drawable/logout"
+            android:gravity="center"
+            android:drawablePadding="30dp"
+            android:layout_marginTop="15dp"
+            android:textColor="#111111"
+            android:id="@+id/profile_page_logout"
+            android:layout_below="@+id/profile_page_change_password"
+            android:layout_alignStart="@+id/profile_page_change_password" />
+    </RelativeLayout>
+
 
 </RelativeLayout>

@@ -47,12 +47,13 @@
         android:background="@drawable/splash1"
         android:adjustViewBounds="true"
         android:visibility="gone"
-        android:id="@+id/goal_page_content_image"/>
+        android:id="@+id/goal_page_content_image"
+        android:layout_margin="15dp"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="的进口量法焦点科技进口量的副书记浮空连束带结发流口水的解放路快圣诞节弗兰克束带结发"
         android:textSize="20sp"
         android:id="@+id/goal_page_list_item_content"
-        android:layout_margin="10dp"/>
+        android:layout_margin="15dp"/>
 </LinearLayout>

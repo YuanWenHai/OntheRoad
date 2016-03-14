@@ -3,14 +3,17 @@ package com.will.ontheroad.activities;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.will.ontheroad.R;
@@ -20,6 +23,8 @@ import com.will.ontheroad.bean.Goal;
 import com.will.ontheroad.bean.MyUser;
 import com.will.ontheroad.popup.QuickPopup;
 import com.will.ontheroad.utility.DownloadImageListener;
+
+import junit.framework.Test;
 
 import java.io.File;
 import java.util.Date;
@@ -50,15 +55,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     private final int NETWORK_FIRST = 1;
     private MyUser user;
     private List<Goal> list;
-    private QuickPopup profilePopup;
     private ImageView profileImage;
     private TextView profileName;
     private String myGoalId;
     private QuickPopup markPopup;
-    //TextView profileSetImage;
-    //TextView profileSetName;
-    //TextView profileChangePassword;
-    //TextView profileLogout;
+    private DrawerLayout drawerLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -88,6 +89,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 }
                 goalAdapter.addAll(list);
             }
+
             @Override
             public void onError(int i, String s) {
                 showToast("错误码：" + i + "错误信息：" + s);
@@ -96,19 +98,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     }
     private void initializeViews(){
         listView = (ListView) findViewById(R.id.main_page_list);
-        userName = (TextView) findViewById(R.id.main_page_user_name);
-        userImage = (ImageView) findViewById(R.id.main_page_user_image);
-        userLayout = (LinearLayout) findViewById(R.id.main_page_user_layout);
+        userName = (TextView) findViewById(R.id.main_page_toolbar_name);
+        userImage = (ImageView) findViewById(R.id.main_page_toolbar_image);
+        userLayout = (LinearLayout) findViewById(R.id.main_page_toolbar_user_layout);
         date = (TextView) findViewById(R.id.main_page_date);
         become  = (TextView) findViewById(R.id.main_page_become);
         leftHour = (TextView) findViewById(R.id.main_page_left_hours);
-        addGoal = (Button) findViewById(R.id.main_page_add_goal);
-        note = (Button) findViewById(R.id.main_page_note);
+        profileImage = (ImageView) findViewById(R.id.profile_page_image);
+        profileName = (TextView) findViewById(R.id.profile_page_name);
+        drawerLayout = (DrawerLayout) findViewById(R.id.main_page_drawer_layout);
         userLayout.setOnClickListener(this);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
-        addGoal.setOnClickListener(this);
-        note.setOnClickListener(this);
+        profileImage.setOnClickListener(this);
+        TextView profileChangePassword = (TextView) findViewById(R.id.profile_page_change_password);
+        TextView profileLogout = (TextView) findViewById(R.id.profile_page_logout);
+        TextView profileClearCache = (TextView) findViewById(R.id.profile_page_clear_cache);
+        profileChangePassword.setOnClickListener(this);
+        profileLogout.setOnClickListener(this);
+        profileClearCache.setOnClickListener(this);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
     }
     private void queryUser(){
         user = BmobUser.getCurrentUser(this,MyUser.class);
@@ -120,19 +131,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 try{
                     downloadImage(this, user.getUserImageThumbnail(), new DownloadImageListener() {
                         @Override
-                        public void onSuccess(String localImagePath) {
-                            userImage.setImageDrawable(Drawable.createFromPath(localImagePath));
+                        public void onSuccess(Drawable drawable) {
+                            userImage.setImageDrawable(drawable);
+                            profileImage.setImageDrawable(drawable);
                         }
                     });
                 }catch (Exception e){}
             }else{
                 userImage.setImageResource(R.drawable.sakura);
+                profileImage.setImageResource(R.drawable.sakura);
             }
             String userNameStr = (String) BmobUser.getObjectByKey(this,"userName");
             if(userNameStr != null){
                 userName.setText(userNameStr);
+                profileName.setText(userNameStr);
             }else{
-                userName.setText("修改用户名");
+                userName.setText("请修改用户名");
+                profileName.setText("请修改用户名");
             }
         }
     }
@@ -160,23 +175,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     @Override
     public void onClick(View v){
         switch(v.getId()){
-            case R.id.main_page_user_layout:
-                showProfilePopup();
+            case R.id.main_page_toolbar_user_layout:
+                drawerLayout.openDrawer(Gravity.LEFT);
                 break;
             case R.id.main_page_add_goal:
-                startActivity(new Intent(this,AddGoalActivity.class));
+
                 break;
             case R.id.main_page_note:
                 //添加心情;
-                startActivity(new Intent(this,AddDiaryActivity.class));
+                startActivity(new Intent(this,Test.class));
                 break;
-            case R.id.profile_user_information:
-                startActivity(new Intent(this,UserInformationActivity.class));
-                profilePopup.dismiss();
+            case R.id.profile_page_image:
+                showToast("pressed");
+                startActivity(new Intent(this, UserInformationActivity.class));
                 break;
             case R.id.profile_page_change_password:
                 startActivity(new Intent(MainActivity.this, ChangePasswordActivity.class));
-                profilePopup.dismiss();
+                //profilePopup.dismiss();
                 break;
             case R.id.profile_page_clear_cache:
                 spEditor.clear();
@@ -206,6 +221,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     public void onItemClick(AdapterView<?> parent,View view ,int position,long id){
         Intent intent  = new Intent(this,GoalActivity.class);
         intent.putExtra("goal",list.get(position).getObjectId());
+        intent.putExtra("name",list.get(position).getName());
+        intent.putExtra("image", list.get(position).getImageThumbnail());
+        intent.putExtra("presentation", list.get(position).getPresentation());
+        intent.putExtra("become", list.get(position).getBecome());
+        intent.putExtra("date", list.get(position).getAchievementDate());
         startActivity(intent);
     }
     @Override
@@ -226,14 +246,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
             goalAdapter = new QuickAdapter<Goal>(this, R.layout.main_page_list_item) {
                 @Override
                 protected void convert(final BaseAdapterHelper helper, final Goal goal) {
-                    helper.setText(R.id.main_page_item_goal, goal.getName())
-                            .setText(R.id.main_page_item_begin_date, getFormattedDateCorrectToDay(goal.getCreateDate()))
-                            .setText(R.id.main_page_item_last_update_date, getFormattedDateCorrectToDay(goal.getUpdateDate()));
+                    helper.setText(R.id.main_page_item_goal, goal.getName());
+                    if(goal.getPresentation() != null){
+                        helper.setText(R.id.main_page_item_presentation,goal.getPresentation());
+                        helper.getView(R.id.main_page_item_presentation).setVisibility(View.VISIBLE);
+                    }else{
+                        helper.getView(R.id.main_page_item_presentation).setVisibility(View.GONE);
+                    }
+                    if(goal.getUpdateDate()!=null) {
+                        helper.setText(R.id.main_page_item_last_update_date, "上次更新：" + goal.getUpdateDate());
+                    }else{
+                        helper.setText(R.id.main_page_item_last_update_date,"尚未更新");
+                    }
                     if(goal.getImageThumbnail() !=null){
                     downloadImage(MainActivity.this, goal.getImageThumbnail(), new DownloadImageListener() {
                         @Override
-                        public void onSuccess(final String imagePath) {
-                            helper.setImageDrawable(R.id.main_page_item_image, Drawable.createFromPath(imagePath));
+                        public void onSuccess(Drawable drawable) {
+                            helper.setImageDrawable(R.id.main_page_item_image, drawable);
                         }
                     });
                     }else{
@@ -245,13 +274,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         }
         queryGoal(CACHE_FIRST);
     }
-    private void showProfilePopup(){
+    /*private void showProfilePopup(){
         View view = View.inflate(this,R.layout.profile_page,null);
         profileImage = (ImageView) view.findViewById(R.id.profile_page_image);
         downloadImage(this, user.getUserImageThumbnail(), new DownloadImageListener() {
             @Override
-            public void onSuccess(String localImagePath) {
-                profileImage.setImageDrawable(Drawable.createFromPath(localImagePath));
+            public void onSuccess(Drawable drawable) {
+                profileImage.setImageDrawable(drawable);
             }
         });
         profileName = (TextView) view.findViewById(R.id.profile_page_name);
@@ -269,10 +298,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         profileChangePassword.setOnClickListener(this);
         profileLogout.setOnClickListener(this);
         profileClearCache.setOnClickListener(this);
-        profilePopup = new QuickPopup(view,mScreenWidth*3/5,mScreenHeight-getStateBarHeight());
+        profilePopup = new QuickPopup(view,mScreenWidth*4/5,mScreenHeight);
         profilePopup.setAnimationStyle(R.style.profileAnimation);
-        profilePopup.showAtLocation(userLayout, Gravity.START | Gravity.TOP, 0, getStateBarHeight());
-    }
+        profilePopup.showAtLocation(userLayout, Gravity.NO_GRAVITY, 0, 0);
+    }*/
     @Override
     protected void onNewIntent(Intent intent){
         if(intent.getBooleanExtra("refresh_goal",false)){
@@ -293,7 +322,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
             }
         }).start();
     }
-    private void showMarkPopup(){
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.main_page_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.main_page_toolbar_note:
+                //
+                return true;
+            case R.id.main_page_toolbar_add:
+                startActivity(new Intent(this,AddGoalActivity.class));
+                return true;
+            default:
+               return super.onOptionsItemSelected(item);
+        }
     }
 }

@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
+import com.bmob.BmobProFile;
+import com.bmob.btp.callback.LocalThumbnailListener;
 import com.will.ontheroad.R;
 import com.will.ontheroad.bean.Diary;
 import com.will.ontheroad.utility.DownloadImageListener;
@@ -38,6 +40,8 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
     private Diary diary;
     private Intent receivedIntent;
     private boolean isEdit;
+    private boolean uploadFullImageSuccess;
+    private boolean uploadThumbnailSuccess;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -55,8 +59,8 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
             contentEdit.setText(receivedIntent.getStringExtra("content"));
             downloadImage(this, receivedIntent.getStringExtra("imagePath"), new DownloadImageListener() {
                 @Override
-                public void onSuccess(String localImagePath) {
-                    contentImage.setImageDrawable(Drawable.createFromPath(localImagePath));
+                public void onSuccess(Drawable drawable) {
+                    contentImage.setImageDrawable(drawable);
                     contentImage.setVisibility(View.VISIBLE);
                 }
             });
@@ -93,14 +97,25 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
                    diary.setContent(content);
                    diary.setGoalId(goalId);
                   if(!isEdit){
+                      /*Goal goal = new Goal();
+                      goal.setUpdateDate(new Date(System.currentTimeMillis()));
+                      goal.update(this, receivedIntent.getStringExtra("objectId"), new UpdateListener() {
+                          @Override
+                          public void onSuccess(){}
+                          @Override
+                          public void onFailure(int i, String s) {
+                              showToast(s);
+                          }
+                      });*/
                       diary.save(this, new SaveListener() {
                           @Override
                           public void onSuccess() {
-                              Intent intent = new Intent(AddDiaryActivity.this,GoalActivity.class);
-                              intent.putExtra("refresh",true);
+                              Intent intent = new Intent(AddDiaryActivity.this, GoalActivity.class);
+                              intent.putExtra("refresh", true);
                               startActivity(intent);
                               finish();
                           }
+
                           @Override
                           public void onFailure(int i, String s) {
                               showToast(s);
@@ -138,17 +153,47 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
             contentImage.setVisibility(View.VISIBLE);
             confirm.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
+            //上传全尺寸图片文件
             final BmobFile file = new BmobFile(new File(filePath));
             file.uploadblock(this, new UploadFileListener() {
                 @Override
                 public void onSuccess() {
                     diary.setImage(file.getFileUrl(AddDiaryActivity.this));
+                    uploadFullImageSuccess = true;
+                    if(uploadThumbnailSuccess){
                     progressBar.setVisibility(View.GONE);
                     confirm.setVisibility(View.VISIBLE);
+                    }
                 }
                 @Override
                 public void onFailure(int i, String s) {
-
+                    showToast(s);
+                }
+            });
+            //本地裁剪并上传略缩图
+            new BmobProFile().getLocalThumbnail(filePath, 5,1000,1000, new LocalThumbnailListener() {
+                @Override
+                public void onSuccess(String s) {
+                    final BmobFile bmobFile = new BmobFile(new File(s));
+                    bmobFile.uploadblock(AddDiaryActivity.this, new UploadFileListener() {
+                        @Override
+                        public void onSuccess() {
+                            diary.setImageThumbnail(bmobFile.getFileUrl(AddDiaryActivity.this));
+                            uploadThumbnailSuccess = true;
+                            if(uploadFullImageSuccess){
+                                progressBar.setVisibility(View.GONE);
+                                confirm.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        @Override
+                        public void onFailure(int i, String s) {
+                            showToast(s);
+                        }
+                    });
+                }
+                @Override
+                public void onError(int i, String s) {
+                    showToast(s);
                 }
             });
         }

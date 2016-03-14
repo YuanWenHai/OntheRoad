@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/include_goal_page_bar"
         android:id="@+id/include2" />
@@ -10,21 +11,11 @@
         android:id="@+id/goal_page_list_view"
         android:scrollbars="none"
         android:layout_below="@+id/include2"
-        android:visibility="gone"/>
-    <RelativeLayout
+        android:divider="#eeeeee"
+        android:dividerHeight="13dp"/>
+    <include layout="@layout/progress_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/include2"
-        android:focusable="false"
-        android:background="#FFFFFF"
-        android:visibility="visible"
-        android:id="@+id/goal_page_loading">
-        <ProgressBar
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
-    </RelativeLayout>
+        android:layout_below="@+id/include2" />
+
 </RelativeLayout>

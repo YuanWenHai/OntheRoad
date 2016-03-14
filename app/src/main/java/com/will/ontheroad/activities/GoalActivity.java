@@ -10,9 +10,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
+import com.nhaarman.listviewanimations.appearance.simple.ScaleInAnimationAdapter;
 import com.will.ontheroad.R;
 import com.will.ontheroad.adapter.BaseAdapterHelper;
 import com.will.ontheroad.adapter.MyQuickAdapter;
@@ -22,10 +25,8 @@ import com.will.ontheroad.bean.MyUser;
 import com.will.ontheroad.popup.QuickPopup;
 import com.will.ontheroad.utility.DownloadImageListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
@@ -33,6 +34,7 @@ import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.listener.DeleteListener;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.GetListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * Created by Will on 2016/3/4.
@@ -43,9 +45,18 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     private ListView listView;
     private MyUser user;
     private String goalId;
+    private String goalName;
+    private String goalImage;
+    private String goalPresentation;
+    private String become;
+    private String achievementDate;
+    private Intent receivedIntent;
     private final int NETWORK_FIRST = 0;
     private final int CACHE_FIRST = 1;
-    private RelativeLayout loading;
+    private ProgressBar loading;
+    private AlphaInAnimationAdapter alphaAdapter;
+    private ScaleInAnimationAdapter scaleAdapter;
+    private RelativeLayout loadingPage;
     private List<Diary> list;
     private int position;
     private QuickPopup editPopup;
@@ -57,27 +68,31 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.goal_page);
         user = BmobUser.getCurrentUser(this, MyUser.class);
-        goalId = getIntent().getStringExtra("goal");
-        initializeAdapter();
+        receivedIntent = getIntent();
+        queryGoal();
         initializeViews();
-        queryGoal(goalId);
-        showToast("onCreate");
-        //queryDiary();
+        initializeAdapter();
     }
-    private void queryGoal(String goalId){
-        BmobQuery<Goal> query = new BmobQuery<>();
+    private void queryGoal(){
+        /*BmobQuery<Goal> query = new BmobQuery<>();
         query.getObject(this, goalId, new GetListener<Goal>() {
             @Override
             public void onSuccess(Goal goal) {
                 myGoal = goal;
-                queryDiary();
+                //queryDiary();
             }
 
             @Override
             public void onFailure(int i, String s) {
                 showToast(s);
             }
-        });
+        });*/
+        goalId = receivedIntent.getStringExtra("goal");
+        goalName = receivedIntent.getStringExtra("name");
+        goalImage = receivedIntent.getStringExtra("image");
+        goalPresentation = receivedIntent.getStringExtra("presentation");
+        become = receivedIntent.getStringExtra("become");
+        achievementDate = receivedIntent.getStringExtra("date");;
     }
     private void queryDiary(){
         BmobQuery<Diary> query = new BmobQuery<>();
@@ -93,12 +108,26 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                 GoalActivity.this.list = list;
                 adapter.clear();
                 adapter.addAll(list);
-                listView.setAdapter(adapter);
+                listView.setAdapter(scaleAdapter);
+                loadingPage.setVisibility(View.GONE);
+                //listView.setVisibility(View.VISIBLE);
                 showToast("queryDiary success");
-                loading.setVisibility(View.GONE);
-                listView.setVisibility(View.VISIBLE);
-            }
+                if(order &&list.size()>0){
+                    //获取到diary列表时，将最近的diary更新时间交给所属goal
+                        Goal goal = new Goal();
+                        goal.setUpdateDate(list.get(0).getCreatedAt());
+                        goal.update(GoalActivity.this, goalId, new UpdateListener() {
+                            @Override
+                            public void onSuccess() {}
+                            @Override
+                            public void onFailure(int i, String s) {
+                                showToast(s);
+                            }
+                        });
 
+
+                }
+            }
             @Override
             public void onError(int i, String s) {
                 showToast(s);
@@ -109,32 +138,43 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         adapter = new MyQuickAdapter<Diary>(this,R.layout.goal_page_list_item) {
             @Override
             protected void onFirstItem(final ImageView image, TextView name, TextView presentation) {
-                name.setText(myGoal.getName());
-                presentation.setText(myGoal.getPresentation());
-                downloadImage(GoalActivity.this, myGoal.getImageThumbnail(), new DownloadImageListener() {
+                //name.setText("名字");
+                name.setText(goalName);
+                presentation.setText(goalPresentation);
+                if(goalImage != null){
+                downloadImage(GoalActivity.this, goalImage, new DownloadImageListener() {
                     @Override
-                    public void onSuccess(String localImagePath) {
-                       image.setImageDrawable(Drawable.createFromPath(localImagePath));
+                    public void onSuccess(Drawable drawable) {
+                        image.setImageDrawable(drawable);
                     }
                 });
+                }
             }
-            @Override
+            @Override//user信息获取待优化，无需多次获取
             protected void convert(final BaseAdapterHelper helper, Diary item) {
-                helper.setText(R.id.goal_page_list_item_content,item.getContent())
-                        .setText(R.id.goal_page_list_item_name, user.getUserName())
+                helper.setText(R.id.goal_page_list_item_name, user.getUserName())
                         .setText(R.id.goal_page_list_item_time, item.getCreatedAt());
                 helper.getView(R.id.goal_page_list_item_more).setOnClickListener(GoalActivity.this);
                 helper.getView(R.id.goal_page_list_item_more).setTag(helper.getPosition());
+                if(!item.getContent().isEmpty()){
+                    helper.setText(R.id.goal_page_list_item_content,item.getContent());
+                    helper.getView(R.id.goal_page_list_item_content).setVisibility(View.VISIBLE);
+                }else{
+                    helper.getView(R.id.goal_page_list_item_content).setVisibility(View.GONE);
+                }
+                if(user.getUserImageThumbnail() != null){
                 downloadImage(GoalActivity.this, user.getUserImageThumbnail(), new DownloadImageListener() {
                     @Override
-                    public void onSuccess(String localImagePath) {
-                        helper.setImageDrawable(R.id.goal_page_list_item_image, Drawable.createFromPath(localImagePath));
+                    public void onSuccess(Drawable drawable) {
+                        helper.setImageDrawable(R.id.goal_page_list_item_image, drawable);
                     }
-                });if(item.getImage() != null){
-                downloadImage(GoalActivity.this, item.getImage(), new DownloadImageListener() {
+                });
+                }
+                if(item.getImageThumbnal() != null){
+                downloadImage(GoalActivity.this, item.getImageThumbnal(), new DownloadImageListener() {
                     @Override
-                    public void onSuccess(String localImagePath) {
-                        helper.setImageDrawable(R.id.goal_page_content_image,Drawable.createFromPath(localImagePath));
+                    public void onSuccess(Drawable drawable) {
+                        helper.setImageDrawable(R.id.goal_page_content_image,drawable);
                         helper.getView(R.id.goal_page_content_image).setVisibility(View.VISIBLE);
                     }
                 });
@@ -143,13 +183,19 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                 }
             }
         };
+        scaleAdapter = new ScaleInAnimationAdapter(adapter);
+        scaleAdapter.setAbsListView(listView);
+        //alphaAdapter = new AlphaInAnimationAdapter(adapter);
+        //alphaAdapter.setAbsListView(listView);
+        //listView.setAdapter(adapter);
+        queryDiary();
     }
     @Override
     public void onClick(View v){
         switch(v.getId()){
             case R.id.goal_page_bar_add://工具栏-添加日志
                 Intent intent = new Intent(this,AddDiaryActivity.class);
-                intent.putExtra("goal", myGoal.getObjectId());
+                intent.putExtra("goal", goalId);
                 startActivity(intent);
                 break;
             case R.id.goal_page_list_item_more://日志栏-更多
@@ -213,14 +259,13 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
             case R.id.goal_page_popup_edit_goal://编辑目标
                 goalPopup.dismiss();
                 Intent toAddGoal = new Intent(this,AddGoalActivity.class);
-                toAddGoal.putExtra("objectId",myGoal.getObjectId());
+                toAddGoal.putExtra("objectId",goalId);
                 toAddGoal.putExtra("edit",true);
-                toAddGoal.putExtra("title",myGoal.getName());
-                toAddGoal.putExtra("content",myGoal.getPresentation());
-                toAddGoal.putExtra("image",myGoal.getImageThumbnail());
-                toAddGoal.putExtra("become", myGoal.getBecome());
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-                toAddGoal.putExtra("date", format.format(myGoal.getAchievementDate()));
+                toAddGoal.putExtra("title",goalName);
+                toAddGoal.putExtra("content",goalPresentation);
+                toAddGoal.putExtra("image",goalImage);
+                toAddGoal.putExtra("become", become);
+                toAddGoal.putExtra("date", achievementDate);
                 startActivity(toAddGoal);
                 break;
             case R.id.goal_page_popup_delete_goal://删除目标及其日志
@@ -294,17 +339,31 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     }
     @Override
     public void onNewIntent(Intent intent){
-        if(intent.getStringExtra("goal") != null){
-            goalId = intent.getStringExtra("goal");
-        }
         if(intent.getBooleanExtra("refresh",false)){
-            queryGoal(goalId);
-            refreshMain = true;
+            BmobQuery<Goal> query = new BmobQuery<>();
+            query.getObject(this, goalId, new GetListener<Goal>() {
+                @Override
+                public void onSuccess(Goal goal) {
+                    goalName = goal.getName();
+                    goalImage = goal.getImageThumbnail();
+                    goalPresentation = goal.getPresentation();
+                    become = goal.getBecome();
+                    queryDiary();
+                }
+
+                @Override
+                public void onFailure(int i, String s) {
+                    showToast(s);
+                }
+            });
+        }else {
+            receivedIntent = intent;
         }
+        refreshMain = true;
     }
     private void initializeViews(){
         listView = (ListView) findViewById(R.id.goal_page_list_view);
-        loading = (RelativeLayout) findViewById(R.id.goal_page_loading);
+        loadingPage = (RelativeLayout) findViewById(R.id.loading_page);
         Button back = (Button) findViewById(R.id.goal_page_bar_back);
         Button statistic = (Button) findViewById(R.id.goal_page_bar_statistic);
         Button add = (Button) findViewById(R.id.goal_page_bar_add);

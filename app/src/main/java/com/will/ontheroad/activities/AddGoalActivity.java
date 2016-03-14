@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,21 +13,18 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bmob.BmobProFile;
+import com.bmob.btp.callback.LocalThumbnailListener;
 import com.will.ontheroad.R;
 import com.will.ontheroad.bean.Goal;
 import com.will.ontheroad.bean.MyUser;
 import com.will.ontheroad.utility.DownloadImageListener;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.listener.SaveListener;
-import cn.bmob.v3.listener.ThumbnailUrlListener;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 import cn.qqtheme.framework.picker.DatePicker;
@@ -50,7 +46,6 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
     private String preThumbnailUrl;
     private Intent receivedIntent;
     private String pickedDate;
-    private Boolean isEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +73,8 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
             if(receivedIntent.getStringExtra("image") != null){
                 downloadImage(this, receivedIntent.getStringExtra("image"), new DownloadImageListener() {
                     @Override
-                    public void onSuccess(String localImagePath) {
-                        imageView.setImageDrawable(Drawable.createFromPath(localImagePath));
+                    public void onSuccess(Drawable drawable) {
+                        imageView.setImageDrawable(drawable);
                     }
                 });
             }
@@ -127,22 +122,14 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
                 if(title.isEmpty()|| pickedDate == null|| become.isEmpty()){
                     showToast("请完善内容");
                 }else{
-                    try{
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-                        Date uploadDate = format.parse(pickedDate);
-                        myGoal.setAchievementDate(uploadDate);
-                    }catch (ParseException p){
-                        p.printStackTrace();
-                        showToast("请输入有效的日期,例如20160805");
-                        return;
-                    }
+                        myGoal.setAchievementDate(pickedDate);
                     if(!content.isEmpty()){
                         myGoal.setPresentation(content);
                     }
                     myGoal.setName(title);
                     myGoal.setBecome(become);
-                    myGoal.setCreateDate(new Date(System.currentTimeMillis()));
-                    myGoal.setUpdateDate(new Date(System.currentTimeMillis()));
+                    //myGoal.setCreateDate(new Date(System.currentTimeMillis()));
+                    //myGoal.setUpdateDate(new Date(System.currentTimeMillis()));
                     myGoal.setUser(BmobUser.getCurrentUser(this, MyUser.class));
                     if(!receivedIntent.getBooleanExtra("edit",false)){
                     myGoal.save(this, new SaveListener() {
@@ -188,33 +175,54 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
             cursor.moveToFirst();
             filePath = cursor.getString(cursor.getColumnIndex(filePathColumn[0]));
             cursor.close();
-            Log.e("filePath", filePath);
-            imageView.setImageURI(uri);
+            //imageView.setImageURI(uri);
             confirm.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
+            new BmobProFile().getLocalThumbnail(filePath, 5, 400, 400, new LocalThumbnailListener() {
+                @Override
+                public void onSuccess(String s) {
+                    imageView.setImageDrawable(Drawable.createFromPath(s));;
+                    final BmobFile bmobFile = new BmobFile(new File(s));
+                    bmobFile.uploadblock(AddGoalActivity.this, new UploadFileListener() {
+                        @Override
+                        public void onSuccess() {
+                            myGoal.setImageThumbnail(bmobFile.getFileUrl(AddGoalActivity.this));
+                        }
+                        @Override
+                        public void onFailure(int i, String s) {
+                            showToast(s);
+                        }
+                    });
+                }
+                @Override
+                public void onError(int i, String s) {
+                    showToast(s);
+                }
+            });
             final BmobFile file = new BmobFile(new File(filePath));
             file.uploadblock(this, new UploadFileListener() {
                 @Override
                 public void onSuccess() {
                     myGoal.setImageFileName(file.getFileUrl(AddGoalActivity.this));
-                    file.getThumbnailUrl(AddGoalActivity.this, dpToPx(AddGoalActivity.this, 100),
+                    /*file.getThumbnailUrl(AddGoalActivity.this, dpToPx(AddGoalActivity.this, 100),
                             dpToPx(AddGoalActivity.this, 100), new ThumbnailUrlListener() {
                                 @Override
                                 public void onSuccess(String s) {
                                     myGoal.setImageThumbnail(s);
                                 }
+
                                 @Override
                                 public void onFailure(int i, String s) {
 
                                 }
-                            });
+                            });*/
                     confirm.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.GONE);
                     showToast("upload success.Url is "+file.getFileUrl(AddGoalActivity.this));
                 }
                 @Override
                 public void onFailure(int i, String s) {
-
+                    showToast(s);
                 }
             });
         }

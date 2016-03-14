@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.bmob.BmobProFile;
+import com.bmob.btp.callback.LocalThumbnailListener;
 import com.will.ontheroad.R;
 import com.will.ontheroad.bean.MyUser;
 import com.will.ontheroad.utility.DownloadImageListener;
@@ -20,7 +22,6 @@ import java.io.File;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
-import cn.bmob.v3.listener.ThumbnailUrlListener;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 
@@ -86,7 +87,7 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
     }
 
     private void initializeData() {
-        BmobUser bmobUser = BmobUser.getCurrentUser(this, MyUser.class);
+        //BmobUser bmobUser = BmobUser.getCurrentUser(this, MyUser.class);
         String userName = (String) BmobUser.getObjectByKey(this, "userName");
         if (userName != null) {
             userNameEdit.setText(userName);
@@ -97,8 +98,8 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         if (thumbnail != null) {
             downloadImage(this, thumbnail, new DownloadImageListener() {
                 @Override
-                public void onSuccess(String localImagePath) {
-                    imageView.setImageDrawable(Drawable.createFromPath(localImagePath));
+                public void onSuccess(Drawable drawable) {
+                    imageView.setImageDrawable(drawable);
                 }
             });
         } else {
@@ -118,37 +119,31 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
             cursor.close();
             imageView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
-            final BmobFile bmobFile = new BmobFile(new File(filePath));
-            bmobFile.uploadblock(this, new UploadFileListener() {
+            new BmobProFile().getLocalThumbnail(filePath, 5, 400, 400, new LocalThumbnailListener() {
                 @Override
-                public void onSuccess() {
-                    user.setUserImageName(bmobFile.getFileUrl(UserInformationActivity.this));
-                    bmobFile.getThumbnailUrl(UserInformationActivity.this, dpToPx(UserInformationActivity.this, 100),
-                            dpToPx(UserInformationActivity.this, 100), new ThumbnailUrlListener() {
-                                @Override
-                                public void onSuccess(String s) {
-                                    user.setUserImageThumbnail(s);
-                                    user.update(UserInformationActivity.this);
-                                    downloadImage(UserInformationActivity.this, s, new DownloadImageListener() {
-                                        @Override
-                                        public void onSuccess(String localImagePath) {
-                                            imageView.setImageDrawable(Drawable.createFromPath(localImagePath));
-                                            progressBar.setVisibility(View.GONE);
-                                            imageView.setVisibility(View.VISIBLE);
-                                            showToast("已设置头像");
-                                            index = true;
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onFailure(int i, String s) {
-                                }
-                            });
+                public void onSuccess(String s) {
+                    imageView.setImageDrawable(Drawable.createFromPath(s));
+                    final BmobFile file = new BmobFile(new File(s));
+                    file.uploadblock(UserInformationActivity.this, new UploadFileListener() {
+                        @Override
+                        public void onSuccess() {
+                            user.setUserImageThumbnail(file.getFileUrl(UserInformationActivity.this));
+                            user.update(UserInformationActivity.this);
+                            progressBar.setVisibility(View.GONE);
+                            imageView.setVisibility(View.VISIBLE);
+                            showToast("已设置头像");
+                            index = true;
+                        }
+                        @Override
+                        public void onFailure(int i, String s) {
+                            showToast(s);
+                        }
+                    });
                 }
 
                 @Override
-                public void onFailure(int i, String s) {
+                public void onError(int i, String s) {
+                    showToast(s);
                 }
             });
         }
