@@ -8,6 +8,10 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Cache;
+import com.squareup.picasso.Downloader;
+import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Picasso;
 import com.will.ontheroad.R;
 
 import java.util.Random;
@@ -46,11 +50,16 @@ public class Splash extends Activity {
         Random random = new Random(SystemClock.elapsedRealtime());
         splashImage.setImageResource(SPLASHES[random.nextInt(SPLASHES.length)]);
         initializeSplashImage();
+        //Slide fade = new Slide();
+        //fade.setDuration(1000);
+        //getWindow().setExitTransition(fade);
+        //initializePicasso();
     }
     private void initializeSplashImage(){
         PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("scaleX", 1f, 1.3f);
         PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("scaleY",1f,1.3f);
-        ObjectAnimator.ofPropertyValuesHolder(splashImage, pvhX, pvhY).setDuration(2000).start();
+        PropertyValuesHolder p = PropertyValuesHolder.ofFloat("alpha",1.0f,0.1f);
+        ObjectAnimator.ofPropertyValuesHolder(splashImage, pvhX, pvhY,p).setDuration(2000).start();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -58,10 +67,20 @@ public class Splash extends Activity {
                 if(BmobUser.getCurrentUser(Splash.this) == null) {
                     startActivity(new Intent(Splash.this, LoginActivity.class));
                 }else{
-                    startActivity(new Intent(Splash.this,MainActivity.class));
+                    Intent intent = new Intent(Splash.this,MainActivity.class);
+                    //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+                    //overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 }
                 finish();
+                //overridePendingTransition(0,R.anim.alpha_out);
             }
         }).start();
+    }
+    protected void initializePicasso(){
+        Downloader downloader = new OkHttpDownloader(getApplicationContext(),1024*1024*20);
+        Cache cache = new com.squareup.picasso.LruCache(this);
+        Picasso mPicasso = new Picasso.Builder(getApplicationContext()).downloader(downloader).memoryCache(cache).build();
+        Picasso.setSingletonInstance(mPicasso);
     }
 }

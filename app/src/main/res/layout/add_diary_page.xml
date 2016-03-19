@@ -2,12 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <include layout="@layout/include_confirm_back_bar"
-        android:id="@+id/include" />
-    <ScrollView
+    <include layout="@layout/universal_toolbar" />
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/include"
+        android:id="@+id/linearLayout"
+        android:layout_alignParentBottom="true">
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/splash14"
+            android:id="@+id/add_diary_page_choose_image"/>
+    </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/universal_toolbar"
         android:id="@+id/scroll"
         android:layout_above="@+id/linearLayout"
         android:fillViewport="true">
@@ -25,25 +35,26 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginTop="15dp"
                 android:id="@+id/add_diary_page_edit"
-                android:layout_below="@+id/add_diary_page_image"/>
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/add_diary_page_image"
-                android:adjustViewBounds="true"
-                android:visibility="gone"/>
+                android:layout_below="@+id/add_diary_page_image_layout"/>
+           <RelativeLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:id="@+id/add_diary_page_image_layout"
+               android:visibility="gone">
+               <ImageView
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:id="@+id/add_diary_page_image"
+                   android:adjustViewBounds="true" />
+               <ImageView
+                   android:layout_width="50dp"
+                   android:layout_height="50dp"
+                   android:background="#66666666"
+                   android:src="@drawable/close"
+                   android:id="@+id/add_diary_page_delete_image"
+                   android:layout_alignBottom="@+id/add_diary_page_image"
+                   android:layout_alignParentEnd="true" />
+           </RelativeLayout>
         </RelativeLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout"
-        android:layout_alignParentBottom="true">
-        <Button
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/splash14"
-            android:id="@+id/add_diary_page_choose_image"/>
-    </LinearLayout>
 </RelativeLayout>

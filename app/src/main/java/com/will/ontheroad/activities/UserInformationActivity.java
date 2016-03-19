@@ -14,9 +14,9 @@ import android.widget.ProgressBar;
 
 import com.bmob.BmobProFile;
 import com.bmob.btp.callback.LocalThumbnailListener;
+import com.squareup.picasso.Picasso;
 import com.will.ontheroad.R;
 import com.will.ontheroad.bean.MyUser;
-import com.will.ontheroad.utility.DownloadImageListener;
 
 import java.io.File;
 
@@ -96,12 +96,13 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         }
         String thumbnail = (String) BmobUser.getObjectByKey(this, "userImageThumbnail");
         if (thumbnail != null) {
-            downloadImage(this, thumbnail, new DownloadImageListener() {
+            Picasso.with(this).load(thumbnail).into(imageView);
+            /*downloadImage(this, thumbnail, new DownloadImageListener() {
                 @Override
                 public void onSuccess(Drawable drawable) {
                     imageView.setImageDrawable(drawable);
                 }
-            });
+            });*/
         } else {
             imageView.setImageResource(R.drawable.sakura);
         }

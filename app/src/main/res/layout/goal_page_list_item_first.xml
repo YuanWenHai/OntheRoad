@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <ImageView
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/goal_page_first_item_bg"
+    android:background="@drawable/sakura">
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="80dp">
+    <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:background="@drawable/sakura"
+        android:src="@drawable/sakura"
         android:layout_gravity="center"
         android:scaleType="centerCrop"
-        android:id="@+id/goal_page_image_view"/>
+        android:id="@+id/goal_page_image_view"
+        app:civ_border_width="1px"
+        app:civ_border_color="#FFFFFF"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,4 +36,5 @@
         android:gravity="center"
         android:layout_marginTop="5dp"
         android:id="@+id/goal_page_goal_presentation"/>
+</LinearLayout>
 </LinearLayout>

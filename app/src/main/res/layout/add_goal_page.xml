@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <include layout="@layout/include_confirm_back_title_bar"/>
+    <include layout="@layout/universal_toolbar" />
+
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -10,6 +11,7 @@
         android:id="@+id/add_goal_page_image"
         android:layout_marginTop="20dp"
         android:scaleType="centerCrop"/>
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

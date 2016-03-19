@@ -6,6 +6,9 @@
         <item name="colorPrimary">#111111</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:editTextColor">#333333</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
     <style name="profileAnimation" parent="@android:style/Animation">
         <item name="android:windowEnterAnimation">@anim/profile_in</item>

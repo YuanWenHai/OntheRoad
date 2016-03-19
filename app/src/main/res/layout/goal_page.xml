@@ -3,19 +3,19 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <include layout="@layout/include_goal_page_bar"
-        android:id="@+id/include2" />
+    <include layout="@layout/goal_page_toolbar"/>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/goal_page_list_view"
         android:scrollbars="none"
-        android:layout_below="@+id/include2"
         android:divider="#eeeeee"
-        android:dividerHeight="13dp"/>
+        android:dividerHeight="13dp"
+        android:layout_alignParentTop="true"
+        android:visibility="gone"/>
     <include layout="@layout/progress_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/include2" />
+        android:layout_below="@+id/goal_page_toolbar" />
 
 </RelativeLayout>

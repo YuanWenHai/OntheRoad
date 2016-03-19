@@ -45,6 +45,7 @@ public class BaseActivity extends AppCompatActivity {
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        //initializePicasso();
         mScreenWidth = metrics.widthPixels;
         mScreenHeight = metrics.heightPixels;
         sp = getSharedPreferences("cache",MODE_PRIVATE);
@@ -86,7 +87,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public String getFormattedDateCorrectToDay(Date date) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         return format.format(date);
     }
     public String getFormattedDateCorrectToMinute(Date date){

@@ -5,10 +5,11 @@
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:background="@drawable/splash14"
+        android:src="@drawable/splash14"
         android:id="@+id/main_page_item_image"
         android:layout_centerVertical="true"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        android:layout_marginStart="10dp"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,10 +19,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="学习编程"
-                android:textSize="28sp"
+                android:textSize="23sp"
                 android:layout_centerHorizontal="true"
                 android:id="@+id/main_page_item_goal"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="#000000"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

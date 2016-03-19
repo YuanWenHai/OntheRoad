@@ -1,8 +1,9 @@
 package com.will.ontheroad.activities;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -16,13 +17,13 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.will.ontheroad.R;
 import com.will.ontheroad.adapter.BaseAdapterHelper;
 import com.will.ontheroad.adapter.QuickAdapter;
 import com.will.ontheroad.bean.Goal;
 import com.will.ontheroad.bean.MyUser;
 import com.will.ontheroad.popup.QuickPopup;
-import com.will.ontheroad.utility.DownloadImageListener;
 
 import junit.framework.Test;
 
@@ -63,11 +64,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.alpha_in,0);
         setContentView(R.layout.main_page);
         initializeViews();
         queryUser();
         queryTextContent();
         initializeAdapter();
+
     }
     //请求并显示目标list
     private void queryGoal(int mode){
@@ -118,8 +121,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         profileLogout.setOnClickListener(this);
         profileClearCache.setOnClickListener(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
-        toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
     private void queryUser(){
         user = BmobUser.getCurrentUser(this,MyUser.class);
@@ -129,13 +132,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         }else{
             if(user.getUserImageThumbnail() != null){
                 try{
-                    downloadImage(this, user.getUserImageThumbnail(), new DownloadImageListener() {
+                    Picasso.with(this).load(user.getUserImageThumbnail()).into(userImage);
+                    Picasso.with(this).load(user.getUserImageThumbnail()).into(profileImage);
+                    /*downloadImage(this, user.getUserImageThumbnail(), new DownloadImageListener() {
                         @Override
                         public void onSuccess(Drawable drawable) {
                             userImage.setImageDrawable(drawable);
                             profileImage.setImageDrawable(drawable);
                         }
-                    });
+                    });*/
                 }catch (Exception e){}
             }else{
                 userImage.setImageResource(R.drawable.sakura);
@@ -160,8 +165,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
             query.getObject(this, myGoalId, new GetListener<Goal>() {
                 @Override
                 public void onSuccess(Goal goal) {
-                    date.setText("今天是" + getFormattedDateCorrectToDay(new Date(System.currentTimeMillis())));
-                    become.setText("距离成为"+goal.getBecome()+"还有");
+                    date.setText(getFormattedDateCorrectToDay(new Date(System.currentTimeMillis())));
+                    become.setText(",距离成为"+goal.getBecome()+"还有");
                     leftHour.setText(countDateHour(goal.getAchievementDate()));
                     showToast(countDateHour(goal.getAchievementDate()));
                 }
@@ -259,12 +264,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                         helper.setText(R.id.main_page_item_last_update_date,"尚未更新");
                     }
                     if(goal.getImageThumbnail() !=null){
-                    downloadImage(MainActivity.this, goal.getImageThumbnail(), new DownloadImageListener() {
+                        helper.setImageUrl(R.id.main_page_item_image,goal.getImageThumbnail());
+                    /*downloadImage(MainActivity.this, goal.getImageThumbnail(), new DownloadImageListener() {
                         @Override
                         public void onSuccess(Drawable drawable) {
                             helper.setImageDrawable(R.id.main_page_item_image, drawable);
                         }
-                    });
+                    });*/
                     }else{
                         helper.setImageResource(R.id.main_page_item_image, R.drawable.sakura);
                     }
@@ -331,7 +337,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
             case R.id.main_page_toolbar_note:
-                //
+                //startActivity(new Intent(this,TestActivity.class));
+                ActivityCompat.startActivity(this, new Intent(this, TestActivity.class),
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
                 return true;
             case R.id.main_page_toolbar_add:
                 startActivity(new Intent(this,AddGoalActivity.class));

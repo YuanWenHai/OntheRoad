@@ -43,7 +43,10 @@
         </activity>
         <activity android:name=".activities.AddDiaryActivity"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden|adjustResize">
+        </activity>
+        <activity android:name=".activities.TestActivity"
+            android:launchMode="singleTask">
         </activity>
 
     </application>

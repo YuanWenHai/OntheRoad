@@ -3,23 +3,26 @@ package com.will.ontheroad.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
 import com.bmob.BmobProFile;
 import com.bmob.btp.callback.LocalThumbnailListener;
+import com.squareup.picasso.Picasso;
 import com.will.ontheroad.R;
 import com.will.ontheroad.bean.Diary;
-import com.will.ontheroad.utility.DownloadImageListener;
 
 import java.io.File;
 
@@ -35,13 +38,14 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
     private EditText contentEdit;
     private ImageView contentImage;
     private ProgressBar progressBar;
-    private Button confirm;
+    private Toolbar mToolbar;
     private String goalId;
     private Diary diary;
     private Intent receivedIntent;
     private boolean isEdit;
     private boolean uploadFullImageSuccess;
     private boolean uploadThumbnailSuccess;
+    private RelativeLayout imageLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -52,26 +56,38 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
     private void initializeViews(){
         isEdit = receivedIntent.getBooleanExtra("edit", false);
         goalId = receivedIntent.getStringExtra("goal");
+        imageLayout = (RelativeLayout) findViewById(R.id.add_diary_page_image_layout);
         diary = new Diary();
         contentEdit = (EditText) findViewById(R.id.add_diary_page_edit);
         contentImage = (ImageView) findViewById(R.id.add_diary_page_image);
         if(isEdit){
             contentEdit.setText(receivedIntent.getStringExtra("content"));
-            downloadImage(this, receivedIntent.getStringExtra("imagePath"), new DownloadImageListener() {
+            if(!receivedIntent.getStringExtra("imagePath").equals("")&&receivedIntent.getStringExtra("imagePath") != null){
+                Picasso.with(this).load(receivedIntent.getStringExtra("imagePath")).into(contentImage);
+                imageLayout.setVisibility(View.VISIBLE);
+            /*downloadImage(this, receivedIntent.getStringExtra("imagePath"), new DownloadImageListener() {
                 @Override
                 public void onSuccess(Drawable drawable) {
                     contentImage.setImageDrawable(drawable);
-                    contentImage.setVisibility(View.VISIBLE);
+                    imageLayout.setVisibility(View.VISIBLE);
                 }
-            });
+            });*/
+            }
         }
-        progressBar = (ProgressBar) findViewById(R.id.confirm_back_title_bar_progress);
-        Button back = (Button) findViewById(R.id.bar_button_back);
-        confirm = (Button) findViewById(R.id.bar_button_confirm);
+        progressBar = (ProgressBar) findViewById(R.id.universal_toolbar_progressbar);
+        mToolbar = (Toolbar) findViewById(R.id.universal_toolbar);
+        ImageView deleteImage = (ImageView) findViewById(R.id.add_diary_page_delete_image);
+        deleteImage.setOnClickListener(this);
+        mToolbar.setNavigationIcon(R.drawable.back);
+        setSupportActionBar(mToolbar);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         Button chooseImage = (Button) findViewById(R.id.add_diary_page_choose_image);
         ScrollView blank = (ScrollView) findViewById(R.id.scroll);
-        back.setOnClickListener(this);
-        confirm.setOnClickListener(this);
         chooseImage.setOnClickListener(this);
         blank.setOnClickListener(this);
     }
@@ -79,64 +95,19 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v){
        switch(v.getId()){
            case R.id.scroll:
+               showToast("clicked scroll view");
                contentEdit.requestFocus();
                InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                manager.showSoftInput(contentEdit,0);
                break;
-           case R.id.bar_button_back:
-               onBackPressed();
-               break;
            case R.id.add_diary_page_choose_image:
                startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), 1);
                break;
-           case R.id.bar_button_confirm:
-               String content = contentEdit.getText().toString();
-               if(diary.getImage() == null && content.isEmpty()){
-                   showToast("请输入内容");
-               }else{
-                   diary.setContent(content);
-                   diary.setGoalId(goalId);
-                  if(!isEdit){
-                      /*Goal goal = new Goal();
-                      goal.setUpdateDate(new Date(System.currentTimeMillis()));
-                      goal.update(this, receivedIntent.getStringExtra("objectId"), new UpdateListener() {
-                          @Override
-                          public void onSuccess(){}
-                          @Override
-                          public void onFailure(int i, String s) {
-                              showToast(s);
-                          }
-                      });*/
-                      diary.save(this, new SaveListener() {
-                          @Override
-                          public void onSuccess() {
-                              Intent intent = new Intent(AddDiaryActivity.this, GoalActivity.class);
-                              intent.putExtra("refresh", true);
-                              startActivity(intent);
-                              finish();
-                          }
-
-                          @Override
-                          public void onFailure(int i, String s) {
-                              showToast(s);
-                          }
-                      });
-                  }else{
-                      diary.update(this, receivedIntent.getStringExtra("objectId"), new UpdateListener() {
-                          @Override
-                          public void onSuccess() {
-                              Intent intent = new Intent(AddDiaryActivity.this,GoalActivity.class);
-                              intent.putExtra("refresh",true);
-                              startActivity(intent);
-                              finish();
-                          }
-                          @Override
-                          public void onFailure(int i, String s) {
-                                showToast(s);
-                          }
-                      });
-                  }
-               }
+           case R.id.add_diary_page_delete_image:
+               imageLayout.setVisibility(View.GONE);
+               diary.setImageThumbnail("");
+               diary.setImage("");
+               break;
        }
     }
     @Override
@@ -150,8 +121,8 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
             final String filePath = cursor.getString(cursor.getColumnIndex(filePathColumn[0]));
             cursor.close();
             contentImage.setImageURI(uri);
-            contentImage.setVisibility(View.VISIBLE);
-            confirm.setVisibility(View.GONE);
+            imageLayout.setVisibility(View.VISIBLE);
+            mToolbar.getMenu().getItem(0).setVisible(false);
             progressBar.setVisibility(View.VISIBLE);
             //上传全尺寸图片文件
             final BmobFile file = new BmobFile(new File(filePath));
@@ -162,7 +133,7 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
                     uploadFullImageSuccess = true;
                     if(uploadThumbnailSuccess){
                     progressBar.setVisibility(View.GONE);
-                    confirm.setVisibility(View.VISIBLE);
+                    mToolbar.getMenu().getItem(0).setVisible(true);
                     }
                 }
                 @Override
@@ -182,7 +153,7 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
                             uploadThumbnailSuccess = true;
                             if(uploadFullImageSuccess){
                                 progressBar.setVisibility(View.GONE);
-                                confirm.setVisibility(View.VISIBLE);
+                                mToolbar.getMenu().getItem(0).setVisible(true);
                             }
                         }
                         @Override
@@ -201,5 +172,55 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
     protected void onNewIntent(Intent intent){
         receivedIntent = intent;
         initializeViews();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.add_page_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.universal_toolbar_done:
+                String content = contentEdit.getText().toString();
+                if((diary.getImage() == null ||diary.getImage().equals("")) && content.isEmpty()){
+                    showToast("请输入内容");
+                }else{
+                    diary.setContent(content);
+                    diary.setGoalId(goalId);
+                    if(!isEdit){
+                        diary.save(this, new SaveListener() {
+                            @Override
+                            public void onSuccess() {
+                                Intent intent = new Intent(AddDiaryActivity.this, GoalActivity.class);
+                                intent.putExtra("refresh", true);
+                                startActivity(intent);
+                                finish();
+                            }
+
+                            @Override
+                            public void onFailure(int i, String s) {
+                                showToast(s);
+                            }
+                        });
+                    }else{
+                        diary.update(this, receivedIntent.getStringExtra("objectId"), new UpdateListener() {
+                            @Override
+                            public void onSuccess() {
+                                Intent intent = new Intent(AddDiaryActivity.this,GoalActivity.class);
+                                intent.putExtra("refresh",true);
+                                startActivity(intent);
+                                finish();
+                            }
+                            @Override
+                            public void onFailure(int i, String s) {
+                                showToast(s);
+                            }
+                        });
+                    }
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

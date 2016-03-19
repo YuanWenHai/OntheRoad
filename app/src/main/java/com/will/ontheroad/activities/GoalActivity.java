@@ -3,19 +3,29 @@ package com.will.ontheroad.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.renderscript.Allocation;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.ScaleInAnimationAdapter;
+import com.squareup.picasso.Picasso;
 import com.will.ontheroad.R;
 import com.will.ontheroad.adapter.BaseAdapterHelper;
 import com.will.ontheroad.adapter.MyQuickAdapter;
@@ -23,8 +33,9 @@ import com.will.ontheroad.bean.Diary;
 import com.will.ontheroad.bean.Goal;
 import com.will.ontheroad.bean.MyUser;
 import com.will.ontheroad.popup.QuickPopup;
-import com.will.ontheroad.utility.DownloadImageListener;
+import com.will.ontheroad.utility.MyCache;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,15 +65,15 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     private final int NETWORK_FIRST = 0;
     private final int CACHE_FIRST = 1;
     private ProgressBar loading;
-    private AlphaInAnimationAdapter alphaAdapter;
+    private LinearLayout firstItemBg;
     private ScaleInAnimationAdapter scaleAdapter;
     private RelativeLayout loadingPage;
     private List<Diary> list;
     private int position;
     private QuickPopup editPopup;
-    private QuickPopup goalPopup;
     private boolean refreshMain;
     private boolean order = true;
+    private Toolbar mToolbar;
     @Override
     protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -72,6 +83,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         queryGoal();
         initializeViews();
         initializeAdapter();
+        //blur(R.drawable.sakura, test);
     }
     private void queryGoal(){
         /*BmobQuery<Goal> query = new BmobQuery<>();
@@ -92,7 +104,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         goalImage = receivedIntent.getStringExtra("image");
         goalPresentation = receivedIntent.getStringExtra("presentation");
         become = receivedIntent.getStringExtra("become");
-        achievementDate = receivedIntent.getStringExtra("date");;
+        achievementDate = receivedIntent.getStringExtra("date");
     }
     private void queryDiary(){
         BmobQuery<Diary> query = new BmobQuery<>();
@@ -110,24 +122,27 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                 adapter.addAll(list);
                 listView.setAdapter(scaleAdapter);
                 loadingPage.setVisibility(View.GONE);
-                //listView.setVisibility(View.VISIBLE);
-                showToast("queryDiary success");
-                if(order &&list.size()>0){
+                listView.setVisibility(View.VISIBLE);
+                Log.e("query goal succeed ","at");
+                if (order && list.size() > 0) {
                     //获取到diary列表时，将最近的diary更新时间交给所属goal
-                        Goal goal = new Goal();
-                        goal.setUpdateDate(list.get(0).getCreatedAt());
-                        goal.update(GoalActivity.this, goalId, new UpdateListener() {
-                            @Override
-                            public void onSuccess() {}
-                            @Override
-                            public void onFailure(int i, String s) {
-                                showToast(s);
-                            }
-                        });
+                    Goal goal = new Goal();
+                    goal.setUpdateDate(list.get(0).getCreatedAt());
+                    goal.update(GoalActivity.this, goalId, new UpdateListener() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onFailure(int i, String s) {
+                            showToast(s);
+                        }
+                    });
 
 
                 }
             }
+
             @Override
             public void onError(int i, String s) {
                 showToast(s);
@@ -137,17 +152,15 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     private void initializeAdapter(){
         adapter = new MyQuickAdapter<Diary>(this,R.layout.goal_page_list_item) {
             @Override
-            protected void onFirstItem(final ImageView image, TextView name, TextView presentation) {
-                //name.setText("名字");
+            protected void onFirstItem(final ImageView image, TextView name, TextView presentation,LinearLayout bg) {
+                Log.e(" first item inflated","at");
+                if(goalImage != null && !goalImage.isEmpty()){
+                    blur(goalImage, bg);
+                }
                 name.setText(goalName);
                 presentation.setText(goalPresentation);
                 if(goalImage != null){
-                downloadImage(GoalActivity.this, goalImage, new DownloadImageListener() {
-                    @Override
-                    public void onSuccess(Drawable drawable) {
-                        image.setImageDrawable(drawable);
-                    }
-                });
+                    Picasso.with(GoalActivity.this).load(goalImage).into(image);
                 }
             }
             @Override//user信息获取待优化，无需多次获取
@@ -163,21 +176,11 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                     helper.getView(R.id.goal_page_list_item_content).setVisibility(View.GONE);
                 }
                 if(user.getUserImageThumbnail() != null){
-                downloadImage(GoalActivity.this, user.getUserImageThumbnail(), new DownloadImageListener() {
-                    @Override
-                    public void onSuccess(Drawable drawable) {
-                        helper.setImageDrawable(R.id.goal_page_list_item_image, drawable);
-                    }
-                });
+                    helper.setImageUrl(R.id.goal_page_list_item_image,user.getUserImageThumbnail());
                 }
-                if(item.getImageThumbnal() != null){
-                downloadImage(GoalActivity.this, item.getImageThumbnal(), new DownloadImageListener() {
-                    @Override
-                    public void onSuccess(Drawable drawable) {
-                        helper.setImageDrawable(R.id.goal_page_content_image,drawable);
-                        helper.getView(R.id.goal_page_content_image).setVisibility(View.VISIBLE);
-                    }
-                });
+                if(item.getImageThumbnal() != null && !item.getImageThumbnal().isEmpty()){
+                    helper.setImageUrl(R.id.goal_page_content_image, item.getImageThumbnal());
+                    helper.getView(R.id.goal_page_content_image).setVisibility(View.VISIBLE);
                 }else{
                     helper.getView(R.id.goal_page_content_image).setVisibility(View.GONE);
                 }
@@ -193,11 +196,6 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     @Override
     public void onClick(View v){
         switch(v.getId()){
-            case R.id.goal_page_bar_add://工具栏-添加日志
-                Intent intent = new Intent(this,AddDiaryActivity.class);
-                intent.putExtra("goal", goalId);
-                startActivity(intent);
-                break;
             case R.id.goal_page_list_item_more://日志栏-更多
                 View view = View.inflate(this,R.layout.popup_edit_diary,null);
                 TextView edit = (TextView) view.findViewById(R.id.goal_page_popup_edit);
@@ -213,7 +211,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
             case R.id.goal_page_popup_edit://编辑日志
                 editPopup.dismiss();
                 Intent toAddDiary = new Intent(this,AddDiaryActivity.class);
-                String imagePath = list.get(position).getImage();
+                String imagePath = list.get(position).getImageThumbnal();
                 String content = list.get(position).getContent();
                 toAddDiary.putExtra("edit",true);
                 toAddDiary.putExtra("goal",goalId);
@@ -242,99 +240,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                     }
                 });
                 break;
-            case R.id.goal_page_bar_back://工具栏-返回
-                onBackPressed();
-                break;
-            case R.id.goal_page_bar_more://工具栏-更多
-                View editGoalView = View.inflate(this,R.layout.popup_edit_goal,null);
-                TextView editGoal = (TextView) editGoalView.findViewById(R.id.goal_page_popup_edit_goal);
-                TextView deleteGoal = (TextView) editGoalView.findViewById(R.id.goal_page_popup_delete_goal);
-                TextView orderGoal = (TextView) editGoalView.findViewById(R.id.goal_page_popup_order_goal);
-                editGoal.setOnClickListener(this);
-                deleteGoal.setOnClickListener(this);
-                orderGoal.setOnClickListener(this);
-                goalPopup = new QuickPopup(editGoalView,dpToPx(this,100),dpToPx(this,120));
-                goalPopup.showAtLocation(listView,Gravity.END|Gravity.TOP,0,dpToPx(this,50)+getStateBarHeight());
-                break;
-            case R.id.goal_page_popup_edit_goal://编辑目标
-                goalPopup.dismiss();
-                Intent toAddGoal = new Intent(this,AddGoalActivity.class);
-                toAddGoal.putExtra("objectId",goalId);
-                toAddGoal.putExtra("edit",true);
-                toAddGoal.putExtra("title",goalName);
-                toAddGoal.putExtra("content",goalPresentation);
-                toAddGoal.putExtra("image",goalImage);
-                toAddGoal.putExtra("become", become);
-                toAddGoal.putExtra("date", achievementDate);
-                startActivity(toAddGoal);
-                break;
-            case R.id.goal_page_popup_delete_goal://删除目标及其日志
-                goalPopup.dismiss();
-                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                dialog.setMessage("确定删除?执行后将无法恢复");
-                dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Goal goal = new Goal();
-                        goal.setObjectId(goalId);
-                        goal.delete(GoalActivity.this, new DeleteListener() {
-                            @Override
-                            public void onSuccess() {
-                                showToast("已删除");
-                                Intent toMainActivity = new Intent(GoalActivity.this,MainActivity.class);
-                                toMainActivity.putExtra("refresh_goal",true);
-                                startActivity(toMainActivity);
-                                finish();
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        int i = 0;
-                                        List<BmobObject> diaries = new ArrayList<>();
-                                        Diary diary;
-                                        while(i<list.size()){
-                                            int a = 0;
-                                            diaries.clear();
-                                            while (a++ < 50){
-                                                diaries.add(list.get(i++));
-                                                if( i == list.size()){
-                                                    break;
-                                                }
-                                            }
-                                            new BmobObject().deleteBatch(GoalActivity.this, diaries, new DeleteListener() {
-                                                @Override
-                                                public void onSuccess() {}
-                                                @Override
-                                                public void onFailure(int i, String s) {
-                                                    showToast(s);
-                                                }
-                                            });
 
-                                        }
-                                    }
-                                }).start();
-                            }
-                            @Override
-                            public void onFailure(int i, String s) {
-                                showToast(s);
-                            }
-                        });
-                    }
-                }).create().show();
-                break;
-            case R.id.goal_page_popup_order_goal://日志排序
-                goalPopup.dismiss();
-                if(order){
-                    order = false;
-                }else{
-                    order = true;
-                }
-                queryDiary();
-                break;
         }
     }
     @Override
@@ -364,14 +270,17 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     private void initializeViews(){
         listView = (ListView) findViewById(R.id.goal_page_list_view);
         loadingPage = (RelativeLayout) findViewById(R.id.loading_page);
-        Button back = (Button) findViewById(R.id.goal_page_bar_back);
-        Button statistic = (Button) findViewById(R.id.goal_page_bar_statistic);
-        Button add = (Button) findViewById(R.id.goal_page_bar_add);
-        Button more = (Button) findViewById(R.id.goal_page_bar_more);
-        back.setOnClickListener(this);
-        statistic.setOnClickListener(this);
-        add.setOnClickListener(this);
-        more.setOnClickListener(this);
+        mToolbar = (Toolbar) findViewById(R.id.goal_page_toolbar);
+        mToolbar.setNavigationIcon(R.drawable.back);
+        setSupportActionBar(mToolbar);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        blur(goalImage, mToolbar);
+        mToolbar.setAlpha(0.95f);
     }
     @Override
     public void onBackPressed(){
@@ -381,6 +290,133 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         }
         startActivity(intent);
         finish();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.goal_page_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.goal_page_toolbar_add://增加日志
+                Intent intent = new Intent(this,AddDiaryActivity.class);
+                intent.putExtra("goal", goalId);
+                startActivity(intent);
+                return true;
+            case R.id.goal_page_toolbar_delete://删除目标及其日志
+                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                dialog.setMessage("确定删除?执行后将无法恢复");
+                dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Goal goal = new Goal();
+                        goal.setObjectId(goalId);
+                        goal.delete(GoalActivity.this, new DeleteListener() {
+                            @Override
+                            public void onSuccess() {
+                                showToast("已删除");
+                                Intent toMainActivity = new Intent(GoalActivity.this,MainActivity.class);
+                                toMainActivity.putExtra("refresh_goal",true);
+                                startActivity(toMainActivity);
+                                finish();
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        int i = 0;
+                                        List<BmobObject> diaries = new ArrayList<>();
+                                        while(i<list.size()){
+                                            int a = 0;
+                                            diaries.clear();
+                                            while (a++ < 50){
+                                                diaries.add(list.get(i++));
+                                                if( i == list.size()){
+                                                    break;
+                                                }
+                                            }
+                                            new BmobObject().deleteBatch(GoalActivity.this, diaries, new DeleteListener() {
+                                                @Override
+                                                public void onSuccess() {}
+                                                @Override
+                                                public void onFailure(int i, String s) {
+                                                    showToast(s);
+                                                }
+                                            });
+
+                                        }
+                                    }
+                                }).start();
+                            }
+                            @Override
+                            public void onFailure(int i, String s) {
+                                showToast(s);
+                            }
+                        });
+                    }
+                }).create().show();
+                return true;
+            case R.id.goal_page_toolbar_edit://编辑目标
+                Intent toAddGoal = new Intent(this,AddGoalActivity.class);
+                toAddGoal.putExtra("objectId",goalId);
+                toAddGoal.putExtra("edit",true);
+                toAddGoal.putExtra("title",goalName);
+                toAddGoal.putExtra("content",goalPresentation);
+                toAddGoal.putExtra("image",goalImage);
+                toAddGoal.putExtra("become", become);
+                toAddGoal.putExtra("date", achievementDate);
+                startActivity(toAddGoal);
+                return true;
+            case R.id.goal_page_toolbar_order:
+                if(order){
+                    order = false;
+                }else{
+                    order = true;
+                }
+                queryDiary();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    private void blur(final String url,final View view) {
+        Drawable drawable = MyCache.getInstance().getLru().get(url);
+        if(drawable == null){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bg = null;
+                try {
+                    bg = Picasso.with(GoalActivity.this).load(url).get();
+                }catch(IOException i){
+                    i.printStackTrace();
+                }
+                Matrix matrix = new Matrix();
+                matrix.postScale(0.1f,0.1f);
+                final Bitmap resizeBitmap = Bitmap.createBitmap(bg,0,0,bg.getWidth(),bg.getHeight(),matrix,true);
+                RenderScript rs = RenderScript.create(GoalActivity.this);
+                Allocation overlayAlloc = Allocation.createFromBitmap(rs,resizeBitmap);
+                ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(rs, overlayAlloc.getElement());
+                blur.setInput(overlayAlloc);
+                blur.setRadius(25f);
+                blur.forEach(overlayAlloc);
+                overlayAlloc.copyTo(resizeBitmap);
+                final Drawable drawable = new BitmapDrawable(getResources(), resizeBitmap);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.setBackground(drawable);
+                    }
+                });
+                MyCache.getInstance().getLru().put(url,drawable);
+                rs.destroy();
+            }
+        }).start();
+        }else{
+            view.setBackground(drawable);
+        }
     }
 }
 

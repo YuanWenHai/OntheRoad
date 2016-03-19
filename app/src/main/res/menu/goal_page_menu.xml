@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/goal_page_toolbar_add"
+        android:icon="@drawable/add"
+        android:title="add"
+        app:showAsAction="always"/>
+    <item
+        android:title="overflow"
+        android:icon="@drawable/light_more"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:icon="@drawable/edit"
+                android:title="edit"
+                app:showAsAction="never"
+                android:id="@+id/goal_page_toolbar_edit"/>
+            <item
+                android:icon="@drawable/delete"
+                android:title="delete"
+                app:showAsAction="never"
+                android:id="@+id/goal_page_toolbar_delete"/>
+            <item
+                android:icon="@drawable/order"
+                android:title="order"
+                app:showAsAction="never"
+                android:id="@+id/goal_page_toolbar_order"/>
+        </menu>
+    </item>
+
+</menu>
