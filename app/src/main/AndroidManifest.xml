@@ -30,6 +30,7 @@
             android:launchMode="singleTask">
         </activity>
         <activity android:name=".activities.MainActivity"
+            android:theme="@style/AppTheme_translucent"
             android:launchMode="singleTask">
         </activity>
         <activity android:name=".activities.UserInformationActivity"
@@ -39,11 +40,12 @@
             android:launchMode="singleTask">
         </activity>
         <activity android:name=".activities.GoalActivity"
+            android:theme="@style/AppTheme_translucent"
             android:launchMode="singleTask">
         </activity>
         <activity android:name=".activities.AddDiaryActivity"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+            android:windowSoftInputMode="stateHidden">
         </activity>
         <activity android:name=".activities.TestActivity"
             android:launchMode="singleTask">

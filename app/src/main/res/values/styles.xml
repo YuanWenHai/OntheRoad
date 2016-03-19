@@ -8,6 +8,14 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">#FFFFFF</item>
         <item name="android:editTextColor">#333333</item>
+    </style>
+    <style name="AppTheme_translucent" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#111111</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:editTextColor">#333333</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
     <style name="profileAnimation" parent="@android:style/Animation">

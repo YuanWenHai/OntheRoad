@@ -20,12 +20,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nhaarman.listviewanimations.appearance.simple.ScaleInAnimationAdapter;
 import com.squareup.picasso.Picasso;
+import com.wang.avi.AVLoadingIndicatorView;
 import com.will.ontheroad.R;
 import com.will.ontheroad.adapter.BaseAdapterHelper;
 import com.will.ontheroad.adapter.MyQuickAdapter;
@@ -64,7 +64,6 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     private Intent receivedIntent;
     private final int NETWORK_FIRST = 0;
     private final int CACHE_FIRST = 1;
-    private ProgressBar loading;
     private LinearLayout firstItemBg;
     private ScaleInAnimationAdapter scaleAdapter;
     private RelativeLayout loadingPage;
@@ -74,6 +73,8 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     private boolean refreshMain;
     private boolean order = true;
     private Toolbar mToolbar;
+    private boolean ended;
+    private AVLoadingIndicatorView loading;
     @Override
     protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -106,7 +107,39 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         become = receivedIntent.getStringExtra("become");
         achievementDate = receivedIntent.getStringExtra("date");
     }
+     private void loadMore(){
+        if(!ended) {
+            BmobQuery<Diary> query = new BmobQuery<>();
+            query.addWhereEqualTo("goalId", goalId);
+            if (order) {
+                query.order("-createdAt");
+            } else {
+                query.order("+createdAt");
+            }
+            query.setSkip(list.size());
+            query.setLimit(20);
+            query.findObjects(this, new FindListener<Diary>() {
+                @Override
+                public void onSuccess(List<Diary> list) {
+                    Log.e("list's size", list.size() + "");
+                    if (list.size() < 20) {
+                        ended = true;
+                    }
+                    GoalActivity.this.list.addAll(list);
+                    adapter.addAll(list);
+                    loading.setVisibility(View.GONE);
+                    showToast("load succeed");
+                }
+
+                @Override
+                public void onError(int i, String s) {
+                    showToast(s);
+                }
+            });
+        }
+    }
     private void queryDiary(){
+        ended = false;
         BmobQuery<Diary> query = new BmobQuery<>();
         query.addWhereEqualTo("goalId", goalId);
         if(order) {
@@ -114,6 +147,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         }else{
             query.order("+createdAt");
         }
+        query.setLimit(20);
         query.findObjects(this, new FindListener<Diary>() {
             @Override
             public void onSuccess(List<Diary> list) {
@@ -153,7 +187,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         adapter = new MyQuickAdapter<Diary>(this,R.layout.goal_page_list_item) {
             @Override
             protected void onFirstItem(final ImageView image, TextView name, TextView presentation,LinearLayout bg) {
-                Log.e(" first item inflated","at");
+                //Log.e(" first item inflated","at");
                 if(goalImage != null && !goalImage.isEmpty()){
                     blur(goalImage, bg);
                 }
@@ -165,6 +199,11 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
             }
             @Override//user信息获取待优化，无需多次获取
             protected void convert(final BaseAdapterHelper helper, Diary item) {
+                //Log.e("position",""+helper.getPosition());
+                if(helper.getPosition()==list.size()-1 && !ended ){
+                    loading.setVisibility(View.VISIBLE);
+                    loadMore();
+                }
                 helper.setText(R.id.goal_page_list_item_name, user.getUserName())
                         .setText(R.id.goal_page_list_item_time, item.getCreatedAt());
                 helper.getView(R.id.goal_page_list_item_more).setOnClickListener(GoalActivity.this);
@@ -255,8 +294,8 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                     goalPresentation = goal.getPresentation();
                     become = goal.getBecome();
                     queryDiary();
+                    blur(goalImage, mToolbar);
                 }
-
                 @Override
                 public void onFailure(int i, String s) {
                     showToast(s);
@@ -268,6 +307,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         refreshMain = true;
     }
     private void initializeViews(){
+        loading = (AVLoadingIndicatorView) findViewById(R.id.loading);
         listView = (ListView) findViewById(R.id.goal_page_list_view);
         loadingPage = (RelativeLayout) findViewById(R.id.loading_page);
         mToolbar = (Toolbar) findViewById(R.id.goal_page_toolbar);

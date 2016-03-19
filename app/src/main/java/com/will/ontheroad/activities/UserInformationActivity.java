@@ -6,8 +6,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -48,39 +50,20 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         userNameEdit = (EditText) findViewById(R.id.user_information_name_edit);
         progressBar = (ProgressBar) findViewById(R.id.user_information_progress_bar);
         imageView.setOnClickListener(this);
-        Button back = (Button) findViewById(R.id.bar_button_back);
-        Button confirm = (Button) findViewById(R.id.bar_button_confirm);
-        back.setOnClickListener(this);
-        confirm.setOnClickListener(this);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.universal_toolbar);
+        mToolbar.setNavigationIcon(R.drawable.back);
+        setSupportActionBar(mToolbar);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.bar_button_back:
-                if (index) {
-                    Intent intent = new Intent(UserInformationActivity.this, MainActivity.class);
-                    intent.putExtra("refresh_user", true);
-                    startActivity(intent);
-                } else {
-                    onBackPressed();
-                }
-                break;
-            case R.id.bar_button_confirm:
-                user.setUserName(userNameEdit.getText().toString());
-                user.update(this, new UpdateListener() {
-                    @Override
-                    public void onSuccess() {
-                        Intent intent = new Intent(UserInformationActivity.this, MainActivity.class);
-                        intent.putExtra("refresh_user", true);
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onFailure(int i, String s) {
-                    }
-                });
-                break;
             case R.id.user_information_set_image:
                 startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), 1);
         }
@@ -135,6 +118,7 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
                             showToast("已设置头像");
                             index = true;
                         }
+
                         @Override
                         public void onFailure(int i, String s) {
                             showToast(s);
@@ -159,5 +143,26 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         } else {
             super.onBackPressed();
         }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.add_page_menu,menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        user.setUserName(userNameEdit.getText().toString());
+        user.update(this, new UpdateListener() {
+            @Override
+            public void onSuccess() {
+                Intent intent = new Intent(UserInformationActivity.this, MainActivity.class);
+                intent.putExtra("refresh_user", true);
+                startActivity(intent);
+            }
+            @Override
+            public void onFailure(int i, String s) {
+            }
+        });
+        return true;
     }
 }

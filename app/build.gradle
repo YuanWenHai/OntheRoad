@@ -18,13 +18,16 @@ android {
         }
     }
 }
+repositories {
+
+}
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile files('libs/BmobSDK_V3.4.5_1111.jar')
     compile 'cn.qqtheme.framework:WheelPicker:latest.integration'
-    compile 'com.wang.avi:library:1.0.3'
+    compile 'com.wang.avi:library:1.0.4'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
     compile 'de.hdodenhof:circleimageview:2.0.0'

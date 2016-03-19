@@ -62,7 +62,8 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
         contentImage = (ImageView) findViewById(R.id.add_diary_page_image);
         if(isEdit){
             contentEdit.setText(receivedIntent.getStringExtra("content"));
-            if(!receivedIntent.getStringExtra("imagePath").equals("")&&receivedIntent.getStringExtra("imagePath") != null){
+            String path = receivedIntent.getStringExtra("imagePath");
+            if( path !=null  &&!receivedIntent.getStringExtra("imagePath").equals("")){
                 Picasso.with(this).load(receivedIntent.getStringExtra("imagePath")).into(contentImage);
                 imageLayout.setVisibility(View.VISIBLE);
             /*downloadImage(this, receivedIntent.getStringExtra("imagePath"), new DownloadImageListener() {

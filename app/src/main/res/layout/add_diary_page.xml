@@ -9,9 +9,9 @@
         android:id="@+id/linearLayout"
         android:layout_alignParentBottom="true">
         <Button
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/splash14"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:background="@drawable/pick_picture"
             android:id="@+id/add_diary_page_choose_image"/>
     </LinearLayout>
     <ScrollView
@@ -32,10 +32,10 @@
                 android:background="@null"
                 android:hint="write something here"
                 android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
+                android:layout_marginEnd="30dp"
                 android:layout_marginTop="15dp"
                 android:id="@+id/add_diary_page_edit"
-                android:layout_below="@+id/add_diary_page_image_layout"/>
+                android:layout_below="@+id/add_diary_page_image_layout" />
            <RelativeLayout
                android:layout_width="match_parent"
                android:layout_height="wrap_content"

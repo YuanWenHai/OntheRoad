@@ -38,17 +38,18 @@
         android:orientation="vertical"
         android:id="@+id/linearLayout2"
         android:layout_alignParentStart="true"
+        android:clickable="true"
         android:layout_below="@+id/profile_user_information">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="清除缓存"
+            android:text="实验区域"
             android:textSize="18sp"
             android:textColor="#111111"
-            android:drawableStart="@drawable/clear_cache"
+            android:drawableStart="@drawable/laboratory"
             android:gravity="center"
             android:drawablePadding="30dp"
-            android:id="@+id/profile_page_clear_cache"
+            android:id="@+id/profile_page_laboratory"
             android:layout_marginTop="30dp"
             android:layout_marginStart="20dp"
             android:layout_alignParentTop="true"
@@ -64,8 +65,8 @@
             android:textColor="#111111"
             android:layout_marginTop="15dp"
             android:id="@+id/profile_page_change_password"
-            android:layout_below="@+id/profile_page_clear_cache"
-            android:layout_alignStart="@+id/profile_page_clear_cache" />
+            android:layout_below="@+id/profile_page_laboratory"
+            android:layout_alignStart="@+id/profile_page_laboratory" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,9 +75,22 @@
             android:drawableStart="@drawable/logout"
             android:gravity="center"
             android:drawablePadding="30dp"
-            android:layout_marginTop="15dp"
             android:textColor="#111111"
             android:id="@+id/profile_page_logout"
+            android:layout_below="@+id/profile_page_about_me"
+            android:layout_alignStart="@+id/profile_page_change_password"
+            android:layout_marginTop="15dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="关于作者"
+            android:drawableStart="@drawable/about_me"
+            android:gravity="center"
+            android:drawablePadding="30dp"
+            android:textColor="#111111"
+            android:textSize="18dp"
+            android:layout_marginTop="15dp"
+            android:id="@+id/profile_page_about_me"
             android:layout_below="@+id/profile_page_change_password"
             android:layout_alignStart="@+id/profile_page_change_password" />
     </RelativeLayout>

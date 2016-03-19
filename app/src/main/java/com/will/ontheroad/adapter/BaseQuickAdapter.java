@@ -126,8 +126,10 @@ public abstract class BaseQuickAdapter<T, H extends BaseAdapterHelper> extends B
     }
 
     public void addAll(List<T> elem) {
-        data.addAll(elem);
-        notifyDataSetChanged();
+        if(elem.size()>0) {
+            data.addAll(elem);
+            notifyDataSetChanged();
+        }
     }
 
     public void set(T oldElem, T newElem) {

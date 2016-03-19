@@ -27,7 +27,6 @@ import com.will.ontheroad.popup.QuickPopup;
 
 import junit.framework.Test;
 
-import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -116,10 +115,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         profileImage.setOnClickListener(this);
         TextView profileChangePassword = (TextView) findViewById(R.id.profile_page_change_password);
         TextView profileLogout = (TextView) findViewById(R.id.profile_page_logout);
-        TextView profileClearCache = (TextView) findViewById(R.id.profile_page_clear_cache);
+        TextView laboratory = (TextView) findViewById(R.id.profile_page_laboratory);
+        TextView aboutMe = (TextView) findViewById(R.id.profile_page_about_me);
         profileChangePassword.setOnClickListener(this);
         profileLogout.setOnClickListener(this);
-        profileClearCache.setOnClickListener(this);
+        laboratory.setOnClickListener(this);
+        aboutMe.setOnClickListener(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -134,13 +135,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 try{
                     Picasso.with(this).load(user.getUserImageThumbnail()).into(userImage);
                     Picasso.with(this).load(user.getUserImageThumbnail()).into(profileImage);
-                    /*downloadImage(this, user.getUserImageThumbnail(), new DownloadImageListener() {
-                        @Override
-                        public void onSuccess(Drawable drawable) {
-                            userImage.setImageDrawable(drawable);
-                            profileImage.setImageDrawable(drawable);
-                        }
-                    });*/
                 }catch (Exception e){}
             }else{
                 userImage.setImageResource(R.drawable.sakura);
@@ -191,18 +185,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 startActivity(new Intent(this,Test.class));
                 break;
             case R.id.profile_page_image:
-                showToast("pressed");
                 startActivity(new Intent(this, UserInformationActivity.class));
                 break;
             case R.id.profile_page_change_password:
                 startActivity(new Intent(MainActivity.this, ChangePasswordActivity.class));
-                //profilePopup.dismiss();
                 break;
-            case R.id.profile_page_clear_cache:
-                spEditor.clear();
-                spEditor.commit();
-                deleteDirectoryContent(getFilesDir().getPath() + "/thumbnail");
-                showToast("已清除缓存");
+            case R.id.profile_page_laboratory:
+                break;
+            case R.id.profile_page_about_me:
                 break;
             case R.id.profile_page_logout:
                 BmobUser.logOut(this);
@@ -265,12 +255,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                     }
                     if(goal.getImageThumbnail() !=null){
                         helper.setImageUrl(R.id.main_page_item_image,goal.getImageThumbnail());
-                    /*downloadImage(MainActivity.this, goal.getImageThumbnail(), new DownloadImageListener() {
-                        @Override
-                        public void onSuccess(Drawable drawable) {
-                            helper.setImageDrawable(R.id.main_page_item_image, drawable);
-                        }
-                    });*/
                     }else{
                         helper.setImageResource(R.id.main_page_item_image, R.drawable.sakura);
                     }
@@ -280,34 +264,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         }
         queryGoal(CACHE_FIRST);
     }
-    /*private void showProfilePopup(){
-        View view = View.inflate(this,R.layout.profile_page,null);
-        profileImage = (ImageView) view.findViewById(R.id.profile_page_image);
-        downloadImage(this, user.getUserImageThumbnail(), new DownloadImageListener() {
-            @Override
-            public void onSuccess(Drawable drawable) {
-                profileImage.setImageDrawable(drawable);
-            }
-        });
-        profileName = (TextView) view.findViewById(R.id.profile_page_name);
-        String userName = (String)BmobUser.getObjectByKey(this,"userName");
-        if(userName != null){
-            profileName.setText(userName);
-        }else{
-            profileName.setText("设置用户名");
-        }
-        RelativeLayout profileUserInformation = (RelativeLayout) view.findViewById(R.id.profile_user_information);
-        profileUserInformation.setOnClickListener(this);
-        TextView profileChangePassword = (TextView) view.findViewById(R.id.profile_page_change_password);
-        TextView profileLogout = (TextView) view.findViewById(R.id.profile_page_logout);
-        TextView profileClearCache = (TextView) view.findViewById(R.id.profile_page_clear_cache);
-        profileChangePassword.setOnClickListener(this);
-        profileLogout.setOnClickListener(this);
-        profileClearCache.setOnClickListener(this);
-        profilePopup = new QuickPopup(view,mScreenWidth*4/5,mScreenHeight);
-        profilePopup.setAnimationStyle(R.style.profileAnimation);
-        profilePopup.showAtLocation(userLayout, Gravity.NO_GRAVITY, 0, 0);
-    }*/
+
     @Override
     protected void onNewIntent(Intent intent){
         if(intent.getBooleanExtra("refresh_goal",false)){
@@ -315,18 +272,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         }else if(intent.getBooleanExtra("refresh_user",false)){
             queryUser();
         }
-    }
-    private void deleteDirectoryContent(String path){
-        File directory = new File(path);
-        final File[] files = directory.listFiles();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for(File file :files){
-                    file.delete();
-                }
-            }
-        }).start();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -346,6 +291,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 return true;
             default:
                return super.onOptionsItemSelected(item);
+        }
+    }
+    @Override
+    public void onBackPressed(){
+        if(drawerLayout.isDrawerOpen(Gravity.LEFT)){
+            drawerLayout.closeDrawer(Gravity.LEFT);
+        }else{
+            super.onBackPressed();
         }
     }
 }
