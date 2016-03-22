@@ -147,7 +147,7 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.add_page_menu,menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item){

@@ -50,7 +50,11 @@
         <activity android:name=".activities.TestActivity"
             android:launchMode="singleTask">
         </activity>
-
+        <activity android:name=".activities.StatisticActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme_translucent"/>
+        <activity android:name=".activities.FeedbackActivity"
+            android:launchMode="singleTask"/>
     </application>
 
 </manifest>

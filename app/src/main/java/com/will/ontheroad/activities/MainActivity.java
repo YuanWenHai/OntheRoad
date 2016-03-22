@@ -23,31 +23,22 @@ import com.will.ontheroad.adapter.BaseAdapterHelper;
 import com.will.ontheroad.adapter.QuickAdapter;
 import com.will.ontheroad.bean.Goal;
 import com.will.ontheroad.bean.MyUser;
-import com.will.ontheroad.popup.QuickPopup;
 
-import junit.framework.Test;
-
-import java.util.Date;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.GetListener;
-import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * Created by Will on 2016/2/27.
  */
-public class MainActivity extends BaseActivity implements View.OnClickListener,AdapterView.OnItemClickListener,
-        AdapterView.OnItemLongClickListener{
+public class MainActivity extends BaseActivity implements View.OnClickListener,AdapterView.OnItemClickListener
+       {
     private QuickAdapter<Goal> goalAdapter;
     private ListView listView;
     private TextView userName;
     private ImageView userImage;
-    private TextView date;
-    private TextView leftHour;
-    private TextView become;
     private LinearLayout userLayout;
     private Button addGoal;
     private Button note;
@@ -57,19 +48,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     private List<Goal> list;
     private ImageView profileImage;
     private TextView profileName;
-    private String myGoalId;
-    private QuickPopup markPopup;
     private DrawerLayout drawerLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        overridePendingTransition(R.anim.alpha_in,0);
+        overridePendingTransition(R.anim.alpha_in, 0);
         setContentView(R.layout.main_page);
         initializeViews();
         queryUser();
-        queryTextContent();
         initializeAdapter();
-
     }
     //请求并显示目标list
     private void queryGoal(int mode){
@@ -91,10 +78,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 }
                 goalAdapter.addAll(list);
             }
-
             @Override
             public void onError(int i, String s) {
-                showToast("错误码：" + i + "错误信息：" + s);
             }
         });
     }
@@ -103,25 +88,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         userName = (TextView) findViewById(R.id.main_page_toolbar_name);
         userImage = (ImageView) findViewById(R.id.main_page_toolbar_image);
         userLayout = (LinearLayout) findViewById(R.id.main_page_toolbar_user_layout);
-        date = (TextView) findViewById(R.id.main_page_date);
-        become  = (TextView) findViewById(R.id.main_page_become);
-        leftHour = (TextView) findViewById(R.id.main_page_left_hours);
         profileImage = (ImageView) findViewById(R.id.profile_page_image);
         profileName = (TextView) findViewById(R.id.profile_page_name);
         drawerLayout = (DrawerLayout) findViewById(R.id.main_page_drawer_layout);
         userLayout.setOnClickListener(this);
         listView.setOnItemClickListener(this);
-        listView.setOnItemLongClickListener(this);
         profileImage.setOnClickListener(this);
         TextView profileChangePassword = (TextView) findViewById(R.id.profile_page_change_password);
         TextView profileLogout = (TextView) findViewById(R.id.profile_page_logout);
         TextView laboratory = (TextView) findViewById(R.id.profile_page_laboratory);
         TextView aboutMe = (TextView) findViewById(R.id.profile_page_about_me);
+        TextView feedback = (TextView) findViewById(R.id.profile_page_feedback);
         profileChangePassword.setOnClickListener(this);
         profileLogout.setOnClickListener(this);
         laboratory.setOnClickListener(this);
         aboutMe.setOnClickListener(this);
+        feedback.setOnClickListener(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
+        toolbar.setTitle("abc");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
@@ -150,39 +134,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
             }
         }
     }
-    private void queryTextContent(){
-        String myGoalId = (String) BmobUser.getObjectByKey(this,"myGoalId");
-        if(myGoalId == null){
-            //
-        }else{
-            BmobQuery<Goal> query = new BmobQuery<>();
-            query.getObject(this, myGoalId, new GetListener<Goal>() {
-                @Override
-                public void onSuccess(Goal goal) {
-                    date.setText(getFormattedDateCorrectToDay(new Date(System.currentTimeMillis())));
-                    become.setText(",距离成为"+goal.getBecome()+"还有");
-                    leftHour.setText(countDateHour(goal.getAchievementDate()));
-                    showToast(countDateHour(goal.getAchievementDate()));
-                }
-                @Override
-                public void onFailure(int i, String s) {
-
-                }
-            });
-        }
-    }
     @Override
     public void onClick(View v){
         switch(v.getId()){
             case R.id.main_page_toolbar_user_layout:
                 drawerLayout.openDrawer(Gravity.LEFT);
-                break;
-            case R.id.main_page_add_goal:
-
-                break;
-            case R.id.main_page_note:
-                //添加心情;
-                startActivity(new Intent(this,Test.class));
                 break;
             case R.id.profile_page_image:
                 startActivity(new Intent(this, UserInformationActivity.class));
@@ -199,17 +155,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 startActivity(new Intent(this, LoginActivity.class));
                 finish();
                 break;
-            case R.id.popup_mark:
-                markPopup.dismiss();
-                user.setMyGoalId(myGoalId);
-                user.update(this, new UpdateListener() {
-                    @Override
-                    public void onSuccess() {
-                        queryTextContent();
-                    }
-                    @Override
-                    public void onFailure(int i, String s) {}
-                });
+            case R.id.profile_page_feedback:
+                startActivity(new Intent(this,FeedbackActivity.class));
+                break;
         }
     }
     @Override
@@ -221,20 +169,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         intent.putExtra("presentation", list.get(position).getPresentation());
         intent.putExtra("become", list.get(position).getBecome());
         intent.putExtra("date", list.get(position).getAchievementDate());
+        intent.putExtra("created_at",list.get(position).getCreatedAt());
+        intent.putExtra("full_image",list.get(position).getImageFileName());
         startActivity(intent);
-    }
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent,View view ,int position,long id){
-        myGoalId = list.get(position).getObjectId();
-        View v = View.inflate(this,R.layout.popup_mark,null);
-        LinearLayout layout = (LinearLayout) v.findViewById(R.id.popup_mark);
-        layout.setOnClickListener(this);
-        markPopup = new QuickPopup(v,dpToPx(this,150),dpToPx(this,50));
-        markPopup.setAnimationStyle(R.style.alphaAnimation);
-        int[] i = new int[2];
-        view.getLocationOnScreen(i);
-        markPopup.showAtLocation(listView, Gravity.TOP | Gravity.RIGHT, i[0], i[1]);
-        return true;
     }
     private void initializeAdapter() {
         if (goalAdapter == null) {
@@ -256,7 +193,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                     if(goal.getImageThumbnail() !=null){
                         helper.setImageUrl(R.id.main_page_item_image,goal.getImageThumbnail());
                     }else{
-                        helper.setImageResource(R.id.main_page_item_image, R.drawable.sakura);
+                        helper.setImageResource(R.id.main_page_item_image, R.drawable.noimgavailable);
                     }
                 }
             };

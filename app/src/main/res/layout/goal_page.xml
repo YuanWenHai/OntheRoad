@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <include layout="@layout/goal_page_toolbar"/>
+    <include layout="@layout/goal_page_toolbar"
+        android:id="@+id/goal_page_toolbar"/>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -12,21 +13,26 @@
         android:scrollbars="none"
         android:divider="#eeeeee"
         android:dividerHeight="13dp"
-        android:layout_alignParentTop="true"
-        android:visibility="gone"/>
+        android:visibility="visible"
+        android:layout_below="@+id/goal_page_toolbar" />
     <include layout="@layout/progress_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/goal_page_toolbar" />
+        android:layout_alignParentTop="true" />
 
     <com.wang.avi.AVLoadingIndicatorView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/loading"
-        app:indicator="BallBeat"
-        app:indicator_color="#999999"
+        app:indicator="LineSpinFadeLoader"
+        app:indicator_color="#bbbbbb"
         android:visibility="gone"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="80dp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:id="@+id/fragment_container"/>
 </RelativeLayout>

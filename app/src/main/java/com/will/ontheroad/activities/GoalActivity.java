@@ -1,9 +1,11 @@
 package com.will.ontheroad.activities;
 
 import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -32,6 +34,7 @@ import com.will.ontheroad.adapter.MyQuickAdapter;
 import com.will.ontheroad.bean.Diary;
 import com.will.ontheroad.bean.Goal;
 import com.will.ontheroad.bean.MyUser;
+import com.will.ontheroad.fragment.ImageFragment;
 import com.will.ontheroad.popup.QuickPopup;
 import com.will.ontheroad.utility.MyCache;
 
@@ -51,7 +54,6 @@ import cn.bmob.v3.listener.UpdateListener;
  * Created by Will on 2016/3/4.
  */
 public class GoalActivity extends BaseActivity implements View.OnClickListener{
-    private Goal myGoal;
     private MyQuickAdapter<Diary> adapter;
     private ListView listView;
     private MyUser user;
@@ -61,10 +63,9 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     private String goalPresentation;
     private String become;
     private String achievementDate;
+    private String createdAt;
+    private String fullImage;
     private Intent receivedIntent;
-    private final int NETWORK_FIRST = 0;
-    private final int CACHE_FIRST = 1;
-    private LinearLayout firstItemBg;
     private ScaleInAnimationAdapter scaleAdapter;
     private RelativeLayout loadingPage;
     private List<Diary> list;
@@ -74,6 +75,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     private boolean order = true;
     private Toolbar mToolbar;
     private boolean ended;
+    private ImageFragment fragment;
     private AVLoadingIndicatorView loading;
     @Override
     protected void onCreate (Bundle savedInstanceState){
@@ -87,25 +89,14 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         //blur(R.drawable.sakura, test);
     }
     private void queryGoal(){
-        /*BmobQuery<Goal> query = new BmobQuery<>();
-        query.getObject(this, goalId, new GetListener<Goal>() {
-            @Override
-            public void onSuccess(Goal goal) {
-                myGoal = goal;
-                //queryDiary();
-            }
-
-            @Override
-            public void onFailure(int i, String s) {
-                showToast(s);
-            }
-        });*/
         goalId = receivedIntent.getStringExtra("goal");
         goalName = receivedIntent.getStringExtra("name");
         goalImage = receivedIntent.getStringExtra("image");
         goalPresentation = receivedIntent.getStringExtra("presentation");
         become = receivedIntent.getStringExtra("become");
         achievementDate = receivedIntent.getStringExtra("date");
+        createdAt = receivedIntent.getStringExtra("created_at");
+        fullImage =receivedIntent.getStringExtra("full_image");
     }
      private void loadMore(){
         if(!ended) {
@@ -121,14 +112,12 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
             query.findObjects(this, new FindListener<Diary>() {
                 @Override
                 public void onSuccess(List<Diary> list) {
-                    Log.e("list's size", list.size() + "");
                     if (list.size() < 20) {
                         ended = true;
                     }
                     GoalActivity.this.list.addAll(list);
                     adapter.addAll(list);
                     loading.setVisibility(View.GONE);
-                    showToast("load succeed");
                 }
 
                 @Override
@@ -187,7 +176,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         adapter = new MyQuickAdapter<Diary>(this,R.layout.goal_page_list_item) {
             @Override
             protected void onFirstItem(final ImageView image, TextView name, TextView presentation,LinearLayout bg) {
-                //Log.e(" first item inflated","at");
+                image.setOnClickListener(GoalActivity.this);
                 if(goalImage != null && !goalImage.isEmpty()){
                     blur(goalImage, bg);
                 }
@@ -220,6 +209,8 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                 if(item.getImageThumbnal() != null && !item.getImageThumbnal().isEmpty()){
                     helper.setImageUrl(R.id.goal_page_content_image, item.getImageThumbnal());
                     helper.getView(R.id.goal_page_content_image).setVisibility(View.VISIBLE);
+                    helper.getView(R.id.goal_page_content_image).setOnClickListener(GoalActivity.this);
+                    helper.getView(R.id.goal_page_content_image).setTag(helper.getPosition());
                 }else{
                     helper.getView(R.id.goal_page_content_image).setVisibility(View.GONE);
                 }
@@ -279,7 +270,32 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                     }
                 });
                 break;
-
+            case R.id.goal_page_image_view:
+                if(fullImage != null){
+                fragment = new ImageFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("path",fullImage);
+                fragment.setArguments(bundle);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.add(R.id.fragment_container,fragment);
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                transaction.commit();
+        }else{
+                    showToast("你起码得先设置个图啊摔!");
+                }
+                break;
+            case R.id.goal_page_content_image:
+                int index = (int)v.getTag();
+                if(list.get(index).getImage() != null){
+                    Bundle bundle = new Bundle();
+                    bundle.putString("path",list.get(index).getImage());
+                    if(fragment == null){
+                        fragment = new ImageFragment();
+                    }
+                    fragment.setArguments(bundle);
+                    getFragmentManager().beginTransaction().add(R.id.fragment_container,fragment).commit();
+                }
+                break;
         }
     }
     @Override
@@ -313,6 +329,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         mToolbar = (Toolbar) findViewById(R.id.goal_page_toolbar);
         mToolbar.setNavigationIcon(R.drawable.back);
         setSupportActionBar(mToolbar);
+        mToolbar.setTitle("abc");
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -324,12 +341,18 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     }
     @Override
     public void onBackPressed(){
-        Intent intent = new Intent(this,MainActivity.class);
+        if(fragment!= null && fragment.isVisible()){
+            getFragmentManager().beginTransaction().remove(fragment).commit();
+        }else{
         if(refreshMain){
-            intent.putExtra("refresh_goal",true);
+            Intent intent = new Intent(this,MainActivity.class);
+            intent.putExtra("refresh_goal", true);
+            startActivity(intent);
+            finish();
+        }else {
+            super.onBackPressed();
         }
-        startActivity(intent);
-        finish();
+    }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -364,7 +387,6 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                                 Intent toMainActivity = new Intent(GoalActivity.this,MainActivity.class);
                                 toMainActivity.putExtra("refresh_goal",true);
                                 startActivity(toMainActivity);
-                                finish();
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -381,7 +403,9 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                                             }
                                             new BmobObject().deleteBatch(GoalActivity.this, diaries, new DeleteListener() {
                                                 @Override
-                                                public void onSuccess() {}
+                                                public void onSuccess() {
+                                                    finish();
+                                                }
                                                 @Override
                                                 public void onFailure(int i, String s) {
                                                     showToast(s);
@@ -418,10 +442,19 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                     order = true;
                 }
                 queryDiary();
+                return true;
+            case R.id.goal_page_toolbar_statistic:
+                Intent toStatistic = new Intent(this,StatisticActivity.class);
+                toStatistic.putExtra("created_at",createdAt);
+                toStatistic.putExtra("become",become);
+                toStatistic.putExtra("achievement_date",achievementDate);
+                startActivity(toStatistic);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
     private void blur(final String url,final View view) {
+        if(url != null){
         Drawable drawable = MyCache.getInstance().getLru().get(url);
         if(drawable == null){
         new Thread(new Runnable() {
@@ -456,6 +489,9 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         }).start();
         }else{
             view.setBackground(drawable);
+        }
+    }else{
+            view.setBackgroundColor(Color.rgb(17,17,17));
         }
     }
 }

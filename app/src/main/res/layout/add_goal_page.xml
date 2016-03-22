@@ -3,13 +3,12 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/universal_toolbar" />
-
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/sakura"
+        android:src="@drawable/pick_image"
         android:id="@+id/add_goal_page_image"
-        android:layout_marginTop="20dp"
+        android:layout_margin="10dp"
         android:scaleType="centerCrop"/>
 
     <EditText

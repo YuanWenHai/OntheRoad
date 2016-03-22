@@ -58,7 +58,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:id="@+id/main_page_list"/>
+            android:id="@+id/main_page_list"
+            android:scrollbars="none"/>
     </LinearLayout>
     <include layout="@layout/profile_page"
         android:layout_gravity="start"

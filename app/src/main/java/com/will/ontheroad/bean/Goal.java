@@ -1,7 +1,5 @@
 package com.will.ontheroad.bean;
 
-import java.util.Date;
-
 import cn.bmob.v3.BmobObject;
 
 /**
@@ -9,7 +7,6 @@ import cn.bmob.v3.BmobObject;
  */
 public class Goal extends BmobObject {
     private String name;
-    private Date createDate;
     private String updateDate;
     private String imageFileName;
     private String presentation;
@@ -22,12 +19,6 @@ public class Goal extends BmobObject {
     }
     public String getName(){
         return name;
-    }
-    public void setCreateDate(Date createDate){
-        this.createDate = createDate;
-    }
-    public Date getCreateDate(){
-        return createDate;
     }
     public void setUpdateDate(String updateDate){
         this.updateDate = updateDate;

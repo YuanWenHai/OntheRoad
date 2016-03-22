@@ -9,7 +9,7 @@
         android:layout_height="73dp"
         android:fitsSystemWindows="true"
         android:background="?attr/colorPrimary"
-        android:elevation="4dp"
+        app:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:id="@+id/main_page_toolbar"
@@ -22,7 +22,7 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/sakura"
+                android:src="@drawable/anonymous"
                 android:id="@+id/main_page_toolbar_image"/>
             <TextView
                 android:layout_width="wrap_content"

@@ -15,7 +15,7 @@
        <de.hdodenhof.circleimageview.CircleImageView
            android:layout_width="120dp"
            android:layout_height="120dp"
-           android:src="@drawable/sakura"
+           android:src="@drawable/anonymous"
            android:layout_marginStart="33dp"
            android:id="@+id/profile_page_image"
            android:layout_centerVertical="true" />
@@ -41,58 +41,81 @@
         android:clickable="true"
         android:layout_below="@+id/profile_user_information">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="实验区域"
+            android:text="实验室"
             android:textSize="18sp"
             android:textColor="#111111"
             android:drawableStart="@drawable/laboratory"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:drawablePadding="30dp"
             android:id="@+id/profile_page_laboratory"
             android:layout_marginTop="30dp"
-            android:layout_marginStart="20dp"
+            android:paddingStart="30dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:background="@drawable/profile_item_selector"/>
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:text="修改密码"
+            android:paddingStart="30dp"
             android:drawableStart="@drawable/change_password"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:drawablePadding="30dp"
             android:textColor="#111111"
             android:layout_marginTop="15dp"
             android:id="@+id/profile_page_change_password"
             android:layout_below="@+id/profile_page_laboratory"
-            android:layout_alignStart="@+id/profile_page_laboratory" />
+            android:layout_alignStart="@+id/profile_page_laboratory"
+            android:background="@drawable/profile_item_selector"
+            />
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:text="退出登录"
+            android:layout_marginTop="15dp"
+            android:paddingStart="30dp"
             android:drawableStart="@drawable/logout"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:drawablePadding="30dp"
             android:textColor="#111111"
             android:id="@+id/profile_page_logout"
-            android:layout_below="@+id/profile_page_about_me"
-            android:layout_alignStart="@+id/profile_page_change_password"
-            android:layout_marginTop="15dp" />
+            android:background="@drawable/profile_item_selector"
+            android:layout_below="@+id/profile_page_feedback"
+            android:layout_alignParentStart="true" />
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="关于作者"
+            android:paddingStart="30dp"
             android:drawableStart="@drawable/about_me"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:drawablePadding="30dp"
             android:textColor="#111111"
             android:textSize="18dp"
             android:layout_marginTop="15dp"
             android:id="@+id/profile_page_about_me"
             android:layout_below="@+id/profile_page_change_password"
-            android:layout_alignStart="@+id/profile_page_change_password" />
+            android:layout_alignStart="@+id/profile_page_change_password"
+            android:background="@drawable/profile_item_selector"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="提交反馈"
+            android:paddingStart="30dp"
+            android:layout_marginTop="15dp"
+            android:drawableStart="@drawable/feedback"
+            android:gravity="center_vertical"
+            android:drawablePadding="30dp"
+            android:textColor="#111111"
+            android:textSize="18sp"
+            android:id="@+id/profile_page_feedback"
+            android:background="@drawable/profile_item_selector"
+            android:layout_below="@+id/profile_page_about_me"
+            android:layout_alignParentStart="true" />
     </RelativeLayout>
 
 

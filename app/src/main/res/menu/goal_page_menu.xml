@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/goal_page_toolbar_statistic"
+        android:title="statistic"
+        android:icon="@drawable/statistic"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/goal_page_toolbar_add"
         android:icon="@drawable/add"
         android:title="add"

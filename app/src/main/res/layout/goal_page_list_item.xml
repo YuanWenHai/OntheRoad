@@ -41,7 +41,8 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:id="@+id/goal_page_list_item_more"/>
+            android:id="@+id/goal_page_list_item_more"
+            android:layout_marginEnd="7dp"/>
     </RelativeLayout>
     <ImageView
         android:layout_width="match_parent"
@@ -54,7 +55,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="的进口量法焦点科技进口量的副书记浮空连束带结发流口水的解放路快圣诞节弗兰克束带结发"
-        android:textSize="20sp"
+        android:textSize="16sp"
+        android:textColor="#333333"
         android:id="@+id/goal_page_list_item_content"
         android:layout_margin="15dp"/>
 </LinearLayout>

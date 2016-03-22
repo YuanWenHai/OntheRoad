@@ -3,18 +3,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="240dp"
     android:id="@+id/goal_page_first_item_bg"
-    android:background="@drawable/sakura">
+    android:background="@drawable/bg4">
 <LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="80dp">
+    android:layout_marginTop="20dp">
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:src="@drawable/sakura"
+        android:src="@drawable/noimgavailable"
         android:layout_gravity="center"
         android:scaleType="centerCrop"
         android:id="@+id/goal_page_image_view"
@@ -26,7 +26,7 @@
         android:text= "我的本子"
         android:gravity="center"
         android:textSize="20sp"
-        android:textColor="#000000"
+        android:textColor="#FFFFFF"
         android:layout_marginTop="10dp"
         android:id="@+id/goal_page_goal_name"/>
     <TextView
@@ -35,6 +35,7 @@
         android:text="一些介绍"
         android:gravity="center"
         android:layout_marginTop="5dp"
+        android:textColor="#ffffff"
         android:id="@+id/goal_page_goal_presentation"/>
 </LinearLayout>
 </LinearLayout>
