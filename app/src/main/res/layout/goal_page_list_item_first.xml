@@ -10,7 +10,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="20dp">
+    android:layout_marginTop="15dp">
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="150dp"
         android:layout_height="150dp"
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:text= "我的本子"
         android:gravity="center"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:textColor="#FFFFFF"
         android:layout_marginTop="10dp"
         android:id="@+id/goal_page_goal_name"/>

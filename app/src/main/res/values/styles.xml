@@ -18,9 +18,9 @@
         <item name="android:editTextColor">#333333</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
-    <style name="profileAnimation" parent="@android:style/Animation">
-        <item name="android:windowEnterAnimation">@anim/profile_in</item>
-        <item name="android:windowExitAnimation"> @anim/profile_out</item>
+    <style name="scaleAnimation" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/scale_in</item>
+        <item name="android:windowExitAnimation">@anim/scale_out</item>
     </style>
     <style name="alphaAnimation" parent="@android:style/Animation">
         <item name="android:windowEnterAnimation">@anim/alpha_in</item>

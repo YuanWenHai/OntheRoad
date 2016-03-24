@@ -5,7 +5,8 @@
         android:title="note"
         android:icon="@drawable/note"
         app:showAsAction="ifRoom"
-        android:id="@+id/main_page_toolbar_note"/>
+        android:id="@+id/main_page_toolbar_note"
+        android:visible="false"/>
     <item
         android:icon="@drawable/add"
         app:showAsAction="always"

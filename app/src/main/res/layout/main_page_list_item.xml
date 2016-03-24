@@ -5,7 +5,7 @@
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/splash14"
+        android:src="@drawable/noimgavailable"
         android:id="@+id/main_page_item_image"
         android:layout_centerVertical="true"
         android:scaleType="centerCrop"

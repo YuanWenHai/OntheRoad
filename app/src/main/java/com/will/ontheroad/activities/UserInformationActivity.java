@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bmob.BmobProFile;
 import com.bmob.btp.callback.LocalThumbnailListener;
@@ -50,6 +51,8 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
         userNameEdit = (EditText) findViewById(R.id.user_information_name_edit);
         progressBar = (ProgressBar) findViewById(R.id.user_information_progress_bar);
         imageView.setOnClickListener(this);
+        TextView title = (TextView) findViewById(R.id.universal_toolbar_text);
+        title.setText("用户信息");
         Toolbar mToolbar = (Toolbar) findViewById(R.id.universal_toolbar);
         mToolbar.setNavigationIcon(R.drawable.back);
         setSupportActionBar(mToolbar);
@@ -87,7 +90,7 @@ public class UserInformationActivity extends BaseActivity implements View.OnClic
                 }
             });*/
         } else {
-            imageView.setImageResource(R.drawable.sakura);
+            imageView.setImageResource(R.drawable.anonymous);
         }
     }
 

@@ -56,8 +56,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
                     user.login(this, new SaveListener() {
                         @Override
                         public void onSuccess() {
-                            showToast("成功");
+                            showToast("登陆成功");
                             startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                            finish();
                         }
                         @Override
                         public void onFailure(int i, String s) {

@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.will.ontheroad.R;
 
@@ -26,12 +27,11 @@ public class ChangePasswordActivity extends BaseActivity{
         initializeViews();
     }
     private void initializeViews(){
-        //TextView barText = (TextView) findViewById(R.id.bar_text);
-        //barText.setText("修改密码");
-        //barText.setVisibility(View.VISIBLE);
         originalPassword = (EditText) findViewById(R.id.change_password_page_origin);
         newPassword1 = (EditText) findViewById(R.id.change_password_page_new1);
         newPassword2 = (EditText) findViewById(R.id.change_password_page_new2);
+        TextView text = (TextView) findViewById(R.id.universal_toolbar_text);
+        text.setText("修改密码");
         Toolbar mToolbar = (Toolbar) findViewById(R.id.universal_toolbar);
         mToolbar.setNavigationIcon(R.drawable.back);
         mToolbar.setTitle("修改密码");
@@ -42,10 +42,6 @@ public class ChangePasswordActivity extends BaseActivity{
                 onBackPressed();
             }
         });
-        //Button back = (Button) findViewById(R.id.bar_button_back);
-        //Button confirm = (Button) findViewById(R.id.bar_button_confirm);
-        //back.setOnClickListener(this);
-        //confirm.setOnClickListener(this);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){

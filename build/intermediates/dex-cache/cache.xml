@@ -1,3 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
 
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\de.hdodenhof\circleimageview\2.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="031e8b3ab2df4ab43b1017f84417d7e10dfbb8d2">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\de.hdodenhof-circleimageview-2.0.0_1d340db63f1f21502066c72a5a34e2ce2614af87.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\libs\BmobSDK_V3.4.5_1111.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="44e559d18fd5a4826b0a4c0354308213e4f658a2">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\BmobSDK_V3.4.5_1111_d8bdad08b4e41c33538f623f82dbab1db8cd27a9.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\com.nhaarman.listviewanimations\lib-core\3.1.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="acf66033b1418ccf9e15c8e77750981e4809c4ea">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\com.nhaarman.listviewanimations-lib-core-3.1.0_ae9dba8942bcd067183e3605f0c87224f84a9459.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.2.0\jars\libs\internal_impl-23.2.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="6e239441500605809818997dd63b62a947195f8c">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\internal_impl-23.2.0_7e11ebdc01afd1ca516b3b4579551270587b8c4e.jar" />
+    </item>
+    <item
+        jar="C:\Users\Will\.gradle\caches\modules-2\files-2.1\com.squareup.picasso\picasso\2.4.0\f36d2d4e3a36b3259aaf9d004d29b4cdc6c1bfb2\picasso-2.4.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="f36d2d4e3a36b3259aaf9d004d29b4cdc6c1bfb2">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\picasso-2.4.0_302cd14ab291f6b1e14beb57931e733ca2121177.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\cn.qqtheme.framework\WheelPicker\1.1.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="f9e44d5000dbdf734a28ec74c7a11643dddf141b">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\cn.qqtheme.framework-WheelPicker-1.1.0_5153498ce1510a6faa182a282dfbcd06c09f4524.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="e5f32fa48a3eb2de0c987025c11b6e3864b634d9">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\com.android.support-support-v4-23.2.0_de77b2e86099ea19b3b8015f489c5c802cfe777d.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\23.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="8c108c22c99e794eff255bb34d2a461200c4cbb0">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\com.android.support-animated-vector-drawable-23.2.0_2689f402af5fceafed3fd19651a90a4d12886ca7.jar" />
+    </item>
+    <item
+        jar="C:\Users\Will\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp\2.2.0\959c454243581fdf730abfd4f4745441724bcf2c\okhttp-2.2.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="959c454243581fdf730abfd4f4745441724bcf2c">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\okhttp-2.2.0_02e00e34bbaaa335d9e8c65dc2675e9953af31b0.jar" />
+    </item>
+    <item
+        jar="C:\Users\Will\.gradle\caches\modules-2\files-2.1\com.squareup.okio\okio\1.2.0\c0b52915a48fa91b1b94a28d4a2997bac5f524df\okio-1.2.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="c0b52915a48fa91b1b94a28d4a2997bac5f524df">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\okio-1.2.0_0124778788092ec9049434dbc2b57f8fa9a81076.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\com.github.lecho\hellocharts-android\v1.5.8\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="838172f1d23787cc52bb558ef989605bc2aecf62">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\com.github.lecho-hellocharts-android-v1.5.8_db6ce7d4530a6380ea2377c27c1d6a708f6174b1.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\it.sephiroth.android.library.imagezoom\imagezoom\2.2.5\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="406557a6f4369568e5515f8a3c66c97b23f21534">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\it.sephiroth.android.library.imagezoom-imagezoom-2.2.5_bc2ac4020203763afff140c81c57a1c735b8f3e1.jar" />
+    </item>
+    <item
+        jar="C:\Users\Will\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp-urlconnection\2.2.0\cb20062e14c523637b7643295418097b48cccec2\okhttp-urlconnection-2.2.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="cb20062e14c523637b7643295418097b48cccec2">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\okhttp-urlconnection-2.2.0_d02b0e89ebbbe0ca6dd1dd00ddb410fba7326404.jar" />
+    </item>
+    <item
+        jar="C:\Users\Will\.gradle\caches\modules-2\files-2.1\com.nineoldandroids\library\2.4.0\e9b63380f3a242dbdbf103a2355ad7e43bad17cb\library-2.4.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\library-2.4.0_77ed1bf8b0e8188028f594abf69ef5faac8245ca.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="6e3578f92f7462d1a935a1d36173e3bdd1234976">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\com.android.support-appcompat-v7-23.2.0_b788e8c919f4cd23b3ac582e61593a34bd63a1d8.jar" />
+    </item>
+    <item
+        jar="C:\Eclipse\adt-bundle-windows-x86_64-20140702\sdk\extras\android\m2repository\com\android\support\support-annotations\23.2.0\support-annotations-23.2.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="c5bf571bb10462bd90e5419ade67793f71acbc87">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\support-annotations-23.2.0_14b9cb5e852e49f9d42b7bafad6607a14a062a8a.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\cn.qqtheme.framework\Common\1.1.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="447f7734ee4cf456aea32069e858f45a67243cb4">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\cn.qqtheme.framework-Common-1.1.0_3ee2126d34480b74ac295e26e1abe11bbf9ba2f1.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\23.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="292a9fa091757208efa65e77eef63088247e51f3">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\com.android.support-support-vector-drawable-23.2.0_0e1746e0f9cc25ade80280cbf9bafd9b090c1ef8.jar" />
+    </item>
+    <item
+        jar="C:\git\OnTheRoad\app\build\intermediates\exploded-aar\com.wang.avi\library\1.0.4\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="aa6b7036f72ea088b11599d86ca1b6ac91d24862">
+        <dex dex="C:\git\OnTheRoad\app\build\intermediates\pre-dexed\release\com.wang.avi-library-1.0.4_40056e5b20333602478d5e56f2dc45e7a92ae154.jar" />
+    </item>
+
+</items>

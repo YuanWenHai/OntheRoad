@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.will.ontheroad.R;
 import com.will.ontheroad.bean.Feedback;
@@ -23,6 +24,8 @@ public class FeedbackActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.feedback_page);
+        TextView title = (TextView) findViewById(R.id.universal_toolbar_text);
+        title.setText("提交反馈");
         edit = (EditText) findViewById(R.id.feedback_page_edit);
         Toolbar mToolbar = (Toolbar) findViewById(R.id.universal_toolbar);
         mToolbar.setNavigationIcon(R.drawable.back);

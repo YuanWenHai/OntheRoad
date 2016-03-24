@@ -17,14 +17,16 @@
         android:hint="标题"
         android:id="@+id/add_goal_page_edit_title"
         android:singleLine="true"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:textColor="#333333"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_marginTop="8dp"
         android:hint="简介"
         android:id="@+id/add_goal_page_edit_content"
-        android:gravity="start"/>
+        android:gravity="start"
+        android:textColor="#333333"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,7 +37,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="想成为什么样的人呢？想个酷炫的名字吧"
-        android:id="@+id/add_goal_page_edit_become"/>
+        android:id="@+id/add_goal_page_edit_become"
+        android:textColor="#333333"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -37,7 +37,7 @@
         <Button
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/more"
+            android:background="@drawable/btn_more_selector"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"

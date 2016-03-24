@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.bmob.BmobProFile;
 import com.bmob.btp.callback.LocalThumbnailListener;
@@ -54,6 +55,8 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
         initializeViews();
     }
     private void initializeViews(){
+        TextView title = (TextView) findViewById(R.id.universal_toolbar_text);
+        title.setText("新的进展");
         isEdit = receivedIntent.getBooleanExtra("edit", false);
         goalId = receivedIntent.getStringExtra("goal");
         imageLayout = (RelativeLayout) findViewById(R.id.add_diary_page_image_layout);
@@ -61,18 +64,12 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
         contentEdit = (EditText) findViewById(R.id.add_diary_page_edit);
         contentImage = (ImageView) findViewById(R.id.add_diary_page_image);
         if(isEdit){
+            title.setText("编辑进展");
             contentEdit.setText(receivedIntent.getStringExtra("content"));
             String path = receivedIntent.getStringExtra("imagePath");
             if( path !=null  &&!receivedIntent.getStringExtra("imagePath").equals("")){
                 Picasso.with(this).load(receivedIntent.getStringExtra("imagePath")).into(contentImage);
                 imageLayout.setVisibility(View.VISIBLE);
-            /*downloadImage(this, receivedIntent.getStringExtra("imagePath"), new DownloadImageListener() {
-                @Override
-                public void onSuccess(Drawable drawable) {
-                    contentImage.setImageDrawable(drawable);
-                    imageLayout.setVisibility(View.VISIBLE);
-                }
-            });*/
             }
         }
         progressBar = (ProgressBar) findViewById(R.id.universal_toolbar_progressbar);
@@ -183,6 +180,8 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
             case R.id.universal_toolbar_done:
+                if(toggle){
+                    delay(1000);
                 String content = contentEdit.getText().toString();
                 if((diary.getImage() == null ||diary.getImage().equals("")) && content.isEmpty()){
                     showToast("请输入内容");
@@ -219,6 +218,7 @@ public class AddDiaryActivity extends BaseActivity implements View.OnClickListen
                             }
                         });
                     }
+                }
                 }
                 return true;
         }

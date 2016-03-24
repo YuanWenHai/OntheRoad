@@ -2,8 +2,6 @@ package com.will.ontheroad.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -11,10 +9,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -40,8 +38,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     private TextView userName;
     private ImageView userImage;
     private LinearLayout userLayout;
-    private Button addGoal;
-    private Button note;
+    private RelativeLayout noContent;
     private final int CACHE_FIRST = 0;
     private final int NETWORK_FIRST = 1;
     private MyUser user;
@@ -49,6 +46,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     private ImageView profileImage;
     private TextView profileName;
     private DrawerLayout drawerLayout;
+    private RelativeLayout loadingPage;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -71,6 +69,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         query.findObjects(this, new FindListener<Goal>() {
             @Override
             public void onSuccess(List<Goal> goals) {
+                loadingPage.setVisibility(View.GONE);
+                if(goals.size() == 0){
+                    noContent.setVisibility(View.VISIBLE);
+                }else{
+                    noContent.setVisibility(View.GONE);
+                }
                 list = goals;
                 goalAdapter.clear();
                 if (list == null || list.size() == 0) {
@@ -84,6 +88,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         });
     }
     private void initializeViews(){
+        loadingPage = (RelativeLayout) findViewById(R.id.main_page_loading);
+        noContent = (RelativeLayout) findViewById(R.id.main_page_no_content);
         listView = (ListView) findViewById(R.id.main_page_list);
         userName = (TextView) findViewById(R.id.main_page_toolbar_name);
         userImage = (ImageView) findViewById(R.id.main_page_toolbar_image);
@@ -121,16 +127,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                     Picasso.with(this).load(user.getUserImageThumbnail()).into(profileImage);
                 }catch (Exception e){}
             }else{
-                userImage.setImageResource(R.drawable.sakura);
-                profileImage.setImageResource(R.drawable.sakura);
+                userImage.setImageResource(R.drawable.anonymous);
+                profileImage.setImageResource(R.drawable.anonymous);
             }
             String userNameStr = (String) BmobUser.getObjectByKey(this,"userName");
             if(userNameStr != null){
                 userName.setText(userNameStr);
                 profileName.setText(userNameStr);
             }else{
-                userName.setText("请修改用户名");
-                profileName.setText("请修改用户名");
+                userName.setText("请设置用户名");
+                profileName.setText("请设置用户名");
             }
         }
     }
@@ -147,8 +153,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 startActivity(new Intent(MainActivity.this, ChangePasswordActivity.class));
                 break;
             case R.id.profile_page_laboratory:
+                showToast("开发中```");
                 break;
             case R.id.profile_page_about_me:
+                startActivity(new Intent(this,AboutMe.class));
                 break;
             case R.id.profile_page_logout:
                 BmobUser.logOut(this);
@@ -219,9 +227,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
             case R.id.main_page_toolbar_note:
-                //startActivity(new Intent(this,TestActivity.class));
-                ActivityCompat.startActivity(this, new Intent(this, TestActivity.class),
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
                 return true;
             case R.id.main_page_toolbar_add:
                 startActivity(new Intent(this,AddGoalActivity.class));
@@ -234,6 +239,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     public void onBackPressed(){
         if(drawerLayout.isDrawerOpen(Gravity.LEFT)){
             drawerLayout.closeDrawer(Gravity.LEFT);
+        }else if (toggle){
+            showToast("再按一次退出");
+            delay(3000);
         }else{
             super.onBackPressed();
         }

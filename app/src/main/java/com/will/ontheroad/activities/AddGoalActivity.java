@@ -61,6 +61,8 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void initializeViews() {
+        TextView title = (TextView) findViewById(R.id.universal_toolbar_text);
+        title.setText("新建目标");
         mToolbar = (Toolbar) findViewById(R.id.universal_toolbar);
         mToolbar.setNavigationIcon(R.drawable.back);
         setSupportActionBar(mToolbar);
@@ -76,6 +78,7 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
         becomeEdit = (EditText) findViewById(R.id.add_goal_page_edit_become);
         imageView = (ImageView) findViewById(R.id.add_goal_page_image);
         if(receivedIntent.getBooleanExtra("edit",false)){
+            title.setText("编辑目标");
             pickedDate = receivedIntent.getStringExtra("date");
             titleEdit.setText(receivedIntent.getStringExtra("title"));
             dateText.setText(pickedDate);
@@ -168,7 +171,6 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
                     myGoal.setImageFileName(file.getFileUrl(AddGoalActivity.this));
                     mToolbar.getMenu().getItem(0).setVisible(true);
                     progressBar.setVisibility(View.GONE);
-                    showToast("upload success.Url is " + file.getFileUrl(AddGoalActivity.this));
                 }
                 @Override
                 public void onFailure(int i, String s) {
@@ -185,6 +187,8 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.universal_toolbar_done:
+                if(toggle){
+                    delay(1000);
                 String title = titleEdit.getText().toString();
                 String content = contentEdit.getText().toString();
                 //String date = dateEdit.getText().toString();
@@ -231,6 +235,7 @@ public class AddGoalActivity extends BaseActivity implements View.OnClickListene
                             }
                         });
                     }
+                }
                 }
                 return true;
         }

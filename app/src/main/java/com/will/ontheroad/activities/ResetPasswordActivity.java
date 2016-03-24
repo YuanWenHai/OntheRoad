@@ -33,16 +33,15 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         if(emailMessage.isEmpty()){
             showToast("请输入邮箱地址");
         }else{
-            BmobUser user = new BmobUser();
-            user.resetPasswordByEmail(this, emailMessage, new ResetPasswordByEmailListener() {
+            BmobUser.resetPasswordByEmail(this, emailMessage, new ResetPasswordByEmailListener() {
                 @Override
                 public void onSuccess() {
-                    showToast("成功");
+                    showToast("重置链接已发送到此邮箱,请查收");
                 }
 
                 @Override
                 public void onFailure(int i, String s) {
-                    showToast("失败");
+                    showToast("无此注册邮箱");
                 }
             });
         }

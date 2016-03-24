@@ -1,5 +1,6 @@
 package com.will.ontheroad.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -37,12 +38,13 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         String accountMessage = account.getText().toString();
         String passwordMessage = password.getText().toString();
         String emailMessage = email.getText().toString();
-         if( accountMessage.contains(" ") ||emailMessage.contains(" ")){
+         if(accountMessage.contains(" ") ||emailMessage.contains(" ")){
             accountMessage = accountMessage.replaceAll(" ","");
              account.setText(accountMessage);
              emailMessage = emailMessage.replaceAll(" ","");
              email.setText(emailMessage);
-        }else if(emailMessage.length()<1){
+        }
+        if(emailMessage.length()<1){
              showToast("Email不能为空");
          }
         else if(accountMessage.length()<6 || passwordMessage.length()<6){
@@ -57,6 +59,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                 @Override
             public void onSuccess(){
                     showToast("注册成功");
+                    startActivity(new Intent(RegisterActivity.this,MainActivity.class));
                 }
                 @Override
             public void onFailure(int code,String message){

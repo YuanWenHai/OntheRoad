@@ -13,7 +13,8 @@
             android:src="@drawable/anonymous"
             android:scaleType="centerCrop"
             android:layout_centerHorizontal="true"
-            android:id="@+id/user_information_set_image"/>
+            android:id="@+id/user_information_set_image"
+            android:layout_marginTop="30dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

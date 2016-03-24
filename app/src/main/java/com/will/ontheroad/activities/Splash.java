@@ -14,8 +14,6 @@ import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import com.will.ontheroad.R;
 
-import java.util.Random;
-
 import cn.bmob.v3.BmobUser;
 
 /**
@@ -23,32 +21,13 @@ import cn.bmob.v3.BmobUser;
  */
 public class Splash extends Activity {
     private ImageView splashImage;
-    private static final int[] SPLASHES = {
-            R.drawable.splash0,
-            R.drawable.splash1,
-            R.drawable.splash2,
-            R.drawable.splash3,
-            R.drawable.splash4,
-            R.drawable.splash5,
-            R.drawable.splash6,
-            R.drawable.splash7,
-            R.drawable.splash8,
-            R.drawable.splash9,
-            R.drawable.splash10,
-            R.drawable.splash11,
-            R.drawable.splash12,
-            R.drawable.splash13,
-            R.drawable.splash14,
-            R.drawable.splash15,
-            R.drawable.splash16,
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        overridePendingTransition(0,R.anim.alpha_out);
         setContentView(R.layout.splash);
         splashImage = (ImageView) findViewById(R.id.splash_image_view);
-        Random random = new Random(SystemClock.elapsedRealtime());
-        splashImage.setImageResource(SPLASHES[random.nextInt(SPLASHES.length)]);
+        splashImage.setImageResource(R.drawable.splash);
         initializeSplashImage();
         //Slide fade = new Slide();
         //fade.setDuration(1000);
@@ -58,8 +37,8 @@ public class Splash extends Activity {
     private void initializeSplashImage(){
         PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("scaleX", 1f, 1.3f);
         PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("scaleY",1f,1.3f);
-        PropertyValuesHolder p = PropertyValuesHolder.ofFloat("alpha",1.0f,0.1f);
-        ObjectAnimator.ofPropertyValuesHolder(splashImage, pvhX, pvhY,p).setDuration(2000).start();
+        //PropertyValuesHolder p = PropertyValuesHolder.ofFloat("alpha",1.0f,0.5f);
+        ObjectAnimator.ofPropertyValuesHolder(splashImage, pvhX, pvhY).setDuration(2000).start();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -68,9 +47,7 @@ public class Splash extends Activity {
                     startActivity(new Intent(Splash.this, LoginActivity.class));
                 }else{
                     Intent intent = new Intent(Splash.this,MainActivity.class);
-                    //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(intent);
-                    //overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 }
                 finish();
                 //overridePendingTransition(0,R.anim.alpha_out);

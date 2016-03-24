@@ -14,7 +14,6 @@ import android.renderscript.Allocation;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -146,7 +145,6 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                 listView.setAdapter(scaleAdapter);
                 loadingPage.setVisibility(View.GONE);
                 listView.setVisibility(View.VISIBLE);
-                Log.e("query goal succeed ","at");
                 if (order && list.size() > 0) {
                     //获取到diary列表时，将最近的diary更新时间交给所属goal
                     Goal goal = new Goal();
@@ -235,6 +233,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                 editPopup = new QuickPopup(view,dpToPx(this,200),dpToPx(this,50));
                 int[] location = new int[2];
                 v.getLocationOnScreen(location);
+                editPopup.setAnimationStyle(R.style.scaleAnimation);
                 editPopup.showAtLocation(listView, Gravity.NO_GRAVITY, location[0] - dpToPx(this, 200), location[1]);
                 position = (int) v.getTag();
                 break;
@@ -255,14 +254,17 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                 startActivity(toAddDiary);
                 break;
             case R.id.goal_page_popup_delete://删除日志
+                editPopup.dismiss();
                 Diary diary = new Diary();
                 diary.setObjectId(list.get(position).getObjectId());
                 diary.delete(this, new DeleteListener() {
                     @Override
                     public void onSuccess() {
-                        editPopup.dismiss();
+                        list.remove(position);
+                        adapter.clear();
+                        adapter.addAll(list);
                         showToast("已删除");
-                        queryDiary();
+                        //queryDiary();
                     }
                     @Override
                     public void onFailure(int i, String s) {

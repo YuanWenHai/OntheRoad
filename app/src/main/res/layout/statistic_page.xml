@@ -11,7 +11,7 @@
 <RelativeLayout
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg2_vertical">
+    android:background="@drawable/statistic_bg">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

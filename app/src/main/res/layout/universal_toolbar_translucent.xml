@@ -14,5 +14,5 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat"
         app:elevation="4dp"
         android:id="@+id/universal_toolbar_translucent"
-        android:background="@drawable/toolbar_bg"/>
+        android:background="@drawable/statistic_bar_bg"/>
 </LinearLayout>

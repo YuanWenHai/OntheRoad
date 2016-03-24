@@ -2,12 +2,11 @@ package com.will.ontheroad.activities;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.LruCache;
 import android.widget.Toast;
 
 import cn.bmob.v3.Bmob;
@@ -20,7 +19,7 @@ public class BaseActivity extends AppCompatActivity {
     protected int mScreenHeight;
     private Toast mToast;
     private String BMOB_APPID = "02c0cb3d206b649c517d0cd2b663e9c4";
-    protected LruCache<String, Drawable> lru;
+    protected boolean toggle = true;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bmob.initialize(this, BMOB_APPID);
@@ -51,6 +50,14 @@ public class BaseActivity extends AppCompatActivity {
     public int dpToPx(Context context,int dp){
         return (int) (context.getResources().getDisplayMetrics().density * dp + 0.5f);
     }
-
-
+    public void delay(final int time){
+        toggle = false;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SystemClock.sleep(time);
+                toggle = true;
+            }
+        }).start();
+    }
 }
