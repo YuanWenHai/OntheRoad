@@ -6,14 +6,15 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@drawable/noimgavailable"
-        android:id="@+id/main_page_item_image"
+        android:id="@+id/shared_image"
+        android:transitionName="share"
         android:layout_centerVertical="true"
         android:scaleType="centerCrop"
         android:layout_marginStart="10dp"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_toEndOf="@+id/main_page_item_image"
+        android:layout_toEndOf="@+id/shared_image"
         android:orientation="vertical">
             <TextView
                 android:layout_width="wrap_content"

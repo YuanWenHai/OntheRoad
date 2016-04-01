@@ -15,3 +15,15 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-ignorewarnings
+-keepattributes Signature
+-keep class cn.bmob.v3.**{*;}
+-keep public class * extends android.app.Fragment
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReveiver
+-keep public class * extends android.content.ContentProvider
+-keep public class com.will.ontheroad.bean.**{*;}
+-keepclasseswithmembers public class * extends android.view.View{*;}
+-dontwarn com.squareup.okhttp.**

@@ -10,6 +10,7 @@ public class MyUser extends BmobUser {
     private String myGoalId;
     private String userName;
     private String userImageThumbnail;
+    private String backgroundImage;
     public void setUserImageName(String userImageName){
         this.userImageName = userImageName;
     }
@@ -33,5 +34,11 @@ public class MyUser extends BmobUser {
     }
     public String getUserImageThumbnail(){
         return userImageThumbnail;
+    } public void setBackgroundImage(String backgroundImage){
+        this.backgroundImage = backgroundImage;
     }
+    public String getBackgroundImage(){
+        return backgroundImage;
+    }
+
 }

@@ -1,38 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <include layout="@layout/goal_page_toolbar"
-        android:id="@+id/goal_page_toolbar"/>
-    <ListView
+<android.support.design.widget.CoordinatorLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/goal_page_list_view"
-        android:scrollbars="none"
-        android:divider="#dddddd"
-        android:dividerHeight="15dp"
-        android:visibility="visible"
-        android:layout_below="@+id/goal_page_toolbar" />
-    <include layout="@layout/progress_page"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true" />
-
-    <com.wang.avi.AVLoadingIndicatorView
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/loading"
-        app:indicator="LineSpinFadeLoader"
-        app:indicator_color="#bbbbbb"
-        android:visibility="gone"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="80dp" />
+        android:fitsSystemWindows="true"
+        android:id="@+id/appbar_layout"
+        android:transitionName="share">
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            android:fitsSystemWindows="true"
+            app:contentScrim="@color/primary_dark"
+            android:id="@+id/collapsing_toolbar">
+            <ImageView
+                android:id="@+id/shared_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
+                android:maxHeight="300dp"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0"
+                android:src="@drawable/noimgavailable"/>
+            <android.support.v7.widget.Toolbar
+                app:layout_collapseMode="pin"
+                android:id="@+id/toolbar"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"/>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:id="@+id/fragment_container"/>
-</RelativeLayout>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/goal_page_recycler_view"
+            android:scrollbars="none"
+            android:visibility="visible"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            />
+        <com.wang.avi.AVLoadingIndicatorView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/loading"
+            app:indicator="LineSpinFadeLoader"
+            app:indicator_color="#bbbbbb"
+            android:visibility="gone"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="300dp"
+            android:layout_centerHorizontal="true"/>
+        <include layout="@layout/progress_page"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_container" />
+</android.support.design.widget.CoordinatorLayout>

@@ -42,6 +42,9 @@
         <activity android:name=".activities.GoalActivity"
             android:theme="@style/AppTheme_translucent"
             android:launchMode="singleTask">
+             <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".activities.MainActivity"/>
         </activity>
         <activity android:name=".activities.AddDiaryActivity"
             android:launchMode="singleTask"
@@ -54,6 +57,22 @@
             android:launchMode="singleTask"/>
         <activity android:name=".activities.AboutMe"
             android:launchMode="singleTask"/>
+        <activity android:name=".activities.Test"
+            android:launchMode="singleTask"
+            android:theme="@style/TestTheme">
+            <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".activities.MainActivity"/>
+        </activity>
+        <activity android:name=".activities.NoteActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme_translucent">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity"/>
+        </activity>
+        <activity android:name=".activities.AddNoteActivity"
+            android:windowSoftInputMode="stateHidden"/>
     </application>
 
 </manifest>

@@ -51,6 +51,8 @@
         android:layout_marginStart="15dp"
         android:layout_marginTop="8dp"
         android:text="something"
+        android:textColor="#333333"
+        android:singleLine="true"
         android:textSize="20sp"
         android:id="@+id/user_information_name_edit"/>
 

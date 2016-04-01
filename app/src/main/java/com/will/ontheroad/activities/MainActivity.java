@@ -1,6 +1,8 @@
 package com.will.ontheroad.activities;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
@@ -153,7 +155,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                 startActivity(new Intent(MainActivity.this, ChangePasswordActivity.class));
                 break;
             case R.id.profile_page_laboratory:
-                showToast("开发中```");
+                startActivity(new Intent(this,Test.class));
                 break;
             case R.id.profile_page_about_me:
                 startActivity(new Intent(this,AboutMe.class));
@@ -178,8 +180,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         intent.putExtra("become", list.get(position).getBecome());
         intent.putExtra("date", list.get(position).getAchievementDate());
         intent.putExtra("created_at",list.get(position).getCreatedAt());
-        intent.putExtra("full_image",list.get(position).getImageFileName());
-        startActivity(intent);
+        intent.putExtra("full_image", list.get(position).getImageFileName());
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this, view.findViewById(R.id.shared_image), "share").toBundle());
+        }else{
+            startActivity(intent);
+        }//GoalActivity.navigate(this,view.findViewById(R.id.shared_image),list.get(position));
     }
     private void initializeAdapter() {
         if (goalAdapter == null) {
@@ -199,9 +205,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
                         helper.setText(R.id.main_page_item_last_update_date,"尚未更新");
                     }
                     if(goal.getImageThumbnail() !=null){
-                        helper.setImageUrl(R.id.main_page_item_image,goal.getImageThumbnail());
+                        helper.setImageUrl(R.id.shared_image,goal.getImageThumbnail());
                     }else{
-                        helper.setImageResource(R.id.main_page_item_image, R.drawable.noimgavailable);
+                        helper.setImageResource(R.id.shared_image, R.drawable.noimgavailable);
                     }
                 }
             };
@@ -224,16 +230,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         return super.onCreateOptionsMenu(menu);
     }
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch(item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.main_page_toolbar_note:
-                return true;
+                Intent intent = new Intent(this, NoteActivity.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this, findViewById(R.id.main_page_toolbar_image),
+                            "image").toBundle());
+                    return true;
+                } else {
+                    startActivity(intent);
+                    return true;
+                }
             case R.id.main_page_toolbar_add:
-                startActivity(new Intent(this,AddGoalActivity.class));
+                startActivity(new Intent(this, AddGoalActivity.class));
                 return true;
-            default:
-               return super.onOptionsItemSelected(item);
         }
+        return false;
     }
     @Override
     public void onBackPressed(){

@@ -4,40 +4,39 @@ import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
-import android.renderscript.Allocation;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Slide;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nhaarman.listviewanimations.appearance.simple.ScaleInAnimationAdapter;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.wang.avi.AVLoadingIndicatorView;
 import com.will.ontheroad.R;
-import com.will.ontheroad.adapter.BaseAdapterHelper;
-import com.will.ontheroad.adapter.MyQuickAdapter;
+import com.will.ontheroad.adapter.MyRecyclerAdapter;
+import com.will.ontheroad.adapter.QuickAdapter;
 import com.will.ontheroad.bean.Diary;
 import com.will.ontheroad.bean.Goal;
 import com.will.ontheroad.bean.MyUser;
 import com.will.ontheroad.fragment.ImageFragment;
 import com.will.ontheroad.popup.QuickPopup;
-import com.will.ontheroad.utility.MyCache;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,8 +52,6 @@ import cn.bmob.v3.listener.UpdateListener;
  * Created by Will on 2016/3/4.
  */
 public class GoalActivity extends BaseActivity implements View.OnClickListener{
-    private MyQuickAdapter<Diary> adapter;
-    private ListView listView;
     private MyUser user;
     private String goalId;
     private String goalName;
@@ -67,25 +64,32 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
     private Intent receivedIntent;
     private ScaleInAnimationAdapter scaleAdapter;
     private RelativeLayout loadingPage;
-    private List<Diary> list;
+    private List<Diary> list = new ArrayList<>();
     private int position;
     private QuickPopup editPopup;
     private boolean refreshMain;
     private boolean order = true;
-    private Toolbar mToolbar;
+    private RecyclerView recyclerView;
+    private MyRecyclerAdapter recyclerAdapter;
     private boolean ended;
     private ImageFragment fragment;
     private AVLoadingIndicatorView loading;
+    private QuickAdapter<Diary> quickAdapter;
+    private ImageView goalImageView;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
+    private AppBarLayout appBarLayout;
     @Override
     protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        //initializeTransitions();
         setContentView(R.layout.goal_page);
+        //ViewCompat.setTransitionName(findViewById(R.id.appbar_layout),"image");
+        //supportPostponeEnterTransition();
         user = BmobUser.getCurrentUser(this, MyUser.class);
         receivedIntent = getIntent();
         queryGoal();
         initializeViews();
-        initializeAdapter();
-        //blur(R.drawable.sakura, test);
+        queryDiary();
     }
     private void queryGoal(){
         goalId = receivedIntent.getStringExtra("goal");
@@ -98,7 +102,6 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         fullImage =receivedIntent.getStringExtra("full_image");
     }
      private void loadMore(){
-        if(!ended) {
             BmobQuery<Diary> query = new BmobQuery<>();
             query.addWhereEqualTo("goalId", goalId);
             if (order) {
@@ -115,7 +118,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                         ended = true;
                     }
                     GoalActivity.this.list.addAll(list);
-                    adapter.addAll(list);
+                    recyclerAdapter.notifyDataSetChanged();
                     loading.setVisibility(View.GONE);
                 }
 
@@ -125,7 +128,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                 }
             });
         }
-    }
+
     private void queryDiary(){
         ended = false;
         BmobQuery<Diary> query = new BmobQuery<>();
@@ -138,29 +141,26 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         query.setLimit(20);
         query.findObjects(this, new FindListener<Diary>() {
             @Override
-            public void onSuccess(List<Diary> list) {
-                GoalActivity.this.list = list;
-                adapter.clear();
-                adapter.addAll(list);
-                listView.setAdapter(scaleAdapter);
-                loadingPage.setVisibility(View.GONE);
-                listView.setVisibility(View.VISIBLE);
-                if (order && list.size() > 0) {
+            public void onSuccess(List<Diary> diaries) {
+                list.clear();
+                list.addAll(diaries);
+                recyclerAdapter.notifyItemRangeChanged(0,list.size());
+                //listView.setAdapter(scaleAdapter);
+                //loadingPage.setVisibility(View.GONE);
+                //listView.setVisibility(View.VISIBLE);
+                if (order && diaries.size() > 0) {
                     //获取到diary列表时，将最近的diary更新时间交给所属goal
                     Goal goal = new Goal();
-                    goal.setUpdateDate(list.get(0).getCreatedAt());
+                    goal.setUpdateDate(diaries.get(0).getCreatedAt());
                     goal.update(GoalActivity.this, goalId, new UpdateListener() {
                         @Override
                         public void onSuccess() {
                         }
-
                         @Override
                         public void onFailure(int i, String s) {
                             showToast(s);
                         }
                     });
-
-
                 }
             }
 
@@ -170,73 +170,9 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
             }
         });
     }
-    private void initializeAdapter(){
-        adapter = new MyQuickAdapter<Diary>(this,R.layout.goal_page_list_item) {
-            @Override
-            protected void onFirstItem(final ImageView image, TextView name, TextView presentation,LinearLayout bg) {
-                image.setOnClickListener(GoalActivity.this);
-                if(goalImage != null && !goalImage.isEmpty()){
-                    blur(goalImage, bg);
-                }
-                name.setText(goalName);
-                presentation.setText(goalPresentation);
-                if(goalImage != null){
-                    Picasso.with(GoalActivity.this).load(goalImage).into(image);
-                }
-            }
-            @Override//user信息获取待优化，无需多次获取
-            protected void convert(final BaseAdapterHelper helper, Diary item) {
-                //Log.e("position",""+helper.getPosition());
-                if(helper.getPosition()==list.size()-1 && !ended ){
-                    loading.setVisibility(View.VISIBLE);
-                    loadMore();
-                }
-                helper.setText(R.id.goal_page_list_item_name, user.getUserName())
-                        .setText(R.id.goal_page_list_item_time, item.getCreatedAt());
-                helper.getView(R.id.goal_page_list_item_more).setOnClickListener(GoalActivity.this);
-                helper.getView(R.id.goal_page_list_item_more).setTag(helper.getPosition());
-                if(!item.getContent().isEmpty()){
-                    helper.setText(R.id.goal_page_list_item_content,item.getContent());
-                    helper.getView(R.id.goal_page_list_item_content).setVisibility(View.VISIBLE);
-                }else{
-                    helper.getView(R.id.goal_page_list_item_content).setVisibility(View.GONE);
-                }
-                if(user.getUserImageThumbnail() != null){
-                    helper.setImageUrl(R.id.goal_page_list_item_image,user.getUserImageThumbnail());
-                }
-                if(item.getImageThumbnal() != null && !item.getImageThumbnal().isEmpty()){
-                    helper.setImageUrl(R.id.goal_page_content_image, item.getImageThumbnal());
-                    helper.getView(R.id.goal_page_content_image).setVisibility(View.VISIBLE);
-                    helper.getView(R.id.goal_page_content_image).setOnClickListener(GoalActivity.this);
-                    helper.getView(R.id.goal_page_content_image).setTag(helper.getPosition());
-                }else{
-                    helper.getView(R.id.goal_page_content_image).setVisibility(View.GONE);
-                }
-            }
-        };
-        scaleAdapter = new ScaleInAnimationAdapter(adapter);
-        scaleAdapter.setAbsListView(listView);
-        //alphaAdapter = new AlphaInAnimationAdapter(adapter);
-        //alphaAdapter.setAbsListView(listView);
-        //listView.setAdapter(adapter);
-        queryDiary();
-    }
     @Override
     public void onClick(View v){
         switch(v.getId()){
-            case R.id.goal_page_list_item_more://日志栏-更多
-                View view = View.inflate(this,R.layout.popup_edit_diary,null);
-                TextView edit = (TextView) view.findViewById(R.id.goal_page_popup_edit);
-                TextView delete = (TextView) view.findViewById(R.id.goal_page_popup_delete);
-                edit.setOnClickListener(this);
-                delete.setOnClickListener(this);
-                editPopup = new QuickPopup(view,dpToPx(this,200),dpToPx(this,50));
-                int[] location = new int[2];
-                v.getLocationOnScreen(location);
-                editPopup.setAnimationStyle(R.style.scaleAnimation);
-                editPopup.showAtLocation(listView, Gravity.NO_GRAVITY, location[0] - dpToPx(this, 200), location[1]);
-                position = (int) v.getTag();
-                break;
             case R.id.goal_page_popup_edit://编辑日志
                 editPopup.dismiss();
                 Intent toAddDiary = new Intent(this,AddDiaryActivity.class);
@@ -261,8 +197,10 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                     @Override
                     public void onSuccess() {
                         list.remove(position);
-                        adapter.clear();
-                        adapter.addAll(list);
+                        //quickAdapter.clear();
+                        //quickAdapter.addAll(list);
+                        recyclerAdapter.notifyItemRemoved(position);
+                        recyclerAdapter.notifyDataSetChanged();
                         showToast("已删除");
                         //queryDiary();
                     }
@@ -272,7 +210,7 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                     }
                 });
                 break;
-            case R.id.goal_page_image_view:
+            case R.id.shared_image:
                 if(fullImage != null){
                 fragment = new ImageFragment();
                 Bundle bundle = new Bundle();
@@ -312,8 +250,9 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
                     goalPresentation = goal.getPresentation();
                     become = goal.getBecome();
                     queryDiary();
-                    blur(goalImage, mToolbar);
+                    initializeHeader();
                 }
+
                 @Override
                 public void onFailure(int i, String s) {
                     showToast(s);
@@ -325,26 +264,49 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         refreshMain = true;
     }
     private void initializeViews(){
+        initializeRecyclerView();
+        appBarLayout = (AppBarLayout)findViewById(R.id.appbar_layout);
         loading = (AVLoadingIndicatorView) findViewById(R.id.loading);
-        listView = (ListView) findViewById(R.id.goal_page_list_view);
         loadingPage = (RelativeLayout) findViewById(R.id.loading_page);
-        mToolbar = (Toolbar) findViewById(R.id.goal_page_toolbar);
-        mToolbar.setNavigationIcon(R.drawable.back);
-        setSupportActionBar(mToolbar);
-        mToolbar.setTitle("abc");
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout.setExpandedTitleColor(Color.WHITE);
+        goalImageView = (ImageView) findViewById(R.id.shared_image);
+        goalImageView.setOnClickListener(this);
+        initializeHeader();
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    }
+    private void initializeHeader(){
+        collapsingToolbarLayout.setTitle(goalName);
+        if(goalImage != null){
+        Picasso.with(this).load(goalImage).into(goalImageView, new Callback() {
             @Override
-            public void onClick(View v) {
-                onBackPressed();
+            public void onSuccess() {
+                Palette.from(((BitmapDrawable) goalImageView.getDrawable()).getBitmap())
+                        .generate(new Palette.PaletteAsyncListener() {
+                            @Override
+                            public void onGenerated(Palette palette) {
+                                collapsingToolbarLayout.setContentScrimColor(palette.getDarkMutedColor(Color.BLACK));
+                                collapsingToolbarLayout.setStatusBarScrimColor(palette.getDarkMutedColor(Color.BLACK));
+                            }
+                        });
+
             }
+            @Override
+            public void onError() {}
         });
-        blur(goalImage, mToolbar);
-        mToolbar.setAlpha(0.95f);
+        }else{
+            goalImageView.setImageResource(R.drawable.noimgavailable);
+            collapsingToolbarLayout.setContentScrimColor(Color.BLACK);
+            collapsingToolbarLayout.setStatusBarScrimColor(Color.BLACK);
+        }
     }
     @Override
     public void onBackPressed(){
         if(fragment!= null && fragment.isVisible()){
             getFragmentManager().beginTransaction().remove(fragment).commit();
+            appBarLayout.setVisibility(View.VISIBLE);
         }else{
         if(refreshMain){
             Intent intent = new Intent(this,MainActivity.class);
@@ -455,46 +417,69 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         }
         return super.onOptionsItemSelected(item);
     }
-    private void blur(final String url,final View view) {
-        if(url != null){
-        Drawable drawable = MyCache.getInstance().getLru().get(url);
-        if(drawable == null){
-        new Thread(new Runnable() {
+    private void initializeRecyclerView(){
+        recyclerView =(RecyclerView) findViewById(R.id.goal_page_recycler_view);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        final LinearLayoutManager manager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(manager);
+        recyclerAdapter = new MyRecyclerAdapter(this,list,BmobUser.getCurrentUser(this,MyUser.class));
+        recyclerAdapter.setOnMoreClickListener(new MyRecyclerAdapter.MoreClickedListener() {
             @Override
-            public void run() {
-                Bitmap bg = null;
-                try {
-                    bg = Picasso.with(GoalActivity.this).load(url).get();
-                }catch(IOException i){
-                    i.printStackTrace();
-                }
-                Matrix matrix = new Matrix();
-                matrix.postScale(0.1f,0.1f);
-                final Bitmap resizeBitmap = Bitmap.createBitmap(bg,0,0,bg.getWidth(),bg.getHeight(),matrix,true);
-                RenderScript rs = RenderScript.create(GoalActivity.this);
-                Allocation overlayAlloc = Allocation.createFromBitmap(rs,resizeBitmap);
-                ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(rs, overlayAlloc.getElement());
-                blur.setInput(overlayAlloc);
-                blur.setRadius(25f);
-                blur.forEach(overlayAlloc);
-                overlayAlloc.copyTo(resizeBitmap);
-                final Drawable drawable = new BitmapDrawable(getResources(), resizeBitmap);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        view.setBackground(drawable);
-                    }
-                });
-                MyCache.getInstance().getLru().put(url,drawable);
-                rs.destroy();
+            //item上more按钮的点击事件
+            public void onMoreClicked(View v, int position) {
+                View view = View.inflate(GoalActivity.this,R.layout.popup_edit_diary,null);
+                TextView edit = (TextView) view.findViewById(R.id.goal_page_popup_edit);
+                TextView delete = (TextView) view.findViewById(R.id.goal_page_popup_delete);
+                edit.setOnClickListener(GoalActivity.this);
+                delete.setOnClickListener(GoalActivity.this);
+                editPopup = new QuickPopup(view,dpToPx(GoalActivity.this,200),dpToPx(GoalActivity.this,50));
+                int[] location = new int[2];
+                v.getLocationOnScreen(location);
+                editPopup.setAnimationStyle(R.style.scaleAnimation);
+                editPopup.showAtLocation(recyclerView, Gravity.NO_GRAVITY, location[0] - dpToPx(GoalActivity.this, 200), location[1]);
+                GoalActivity.this.position = position;
             }
-        }).start();
-        }else{
-            view.setBackground(drawable);
-        }
-    }else{
-            view.setBackgroundColor(Color.rgb(17,17,17));
+            @Override
+        public void onImageClicked(View v ,int position){
+                if(list.get(position).getImage() != null){
+                    Bundle bundle = new Bundle();
+                    bundle.putString("path", list.get(position).getImage());
+                    if(fragment == null){
+                        fragment = new ImageFragment();
+                    }
+                    fragment.setArguments(bundle);
+                    getFragmentManager().beginTransaction().add(R.id.fragment_container,fragment).commit();
+                    appBarLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    int lastVisibleItem = manager.findLastVisibleItemPosition();
+                    int totalItemCount = manager.getItemCount();
+                    if (lastVisibleItem == totalItemCount - 1) {
+                        if (!ended) {
+                            loading.setVisibility(View.VISIBLE);
+                            loadMore();
+                        } else {
+                            //showToast("已经到最后了");
+                        }
+                    }
+                }
+            }
+        });
+        recyclerView.setAdapter(recyclerAdapter);
+    }
+    private void initializeTransitions(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            Slide transition = new Slide();
+            getWindow().setEnterTransition(transition);
+            //getWindow().setReturnTransition(transition);
         }
     }
+
 }
 
