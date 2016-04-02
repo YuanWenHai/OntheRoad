@@ -5,7 +5,8 @@
         android:id="@+id/goal_page_toolbar_statistic"
         android:title="statistic"
         android:icon="@drawable/statistic"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
     <item
         android:id="@+id/goal_page_toolbar_add"
         android:icon="@drawable/add"
