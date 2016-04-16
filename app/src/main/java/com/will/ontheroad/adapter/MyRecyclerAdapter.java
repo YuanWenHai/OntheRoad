@@ -15,6 +15,7 @@ import com.will.ontheroad.bean.Diary;
 import com.will.ontheroad.bean.MyUser;
 
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by Will on 2016/3/29.
@@ -24,6 +25,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
     private MyUser user;
     private Context context;
     private MoreClickedListener listener;
+    Vector<Boolean> vector = new Vector<>();
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public ImageView userImage;
         public TextView userName;
@@ -95,10 +97,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
             }
         });
     }
-    public interface MoreClickedListener{
-        void onMoreClicked(View v,int position);
-        void onImageClicked(View v,int position);
-    }
+
     @Override
     public int getItemCount(){
         return  data.size();
@@ -107,4 +106,8 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
         this.listener = listener;
     }
 
+    public interface MoreClickedListener{
+        void onMoreClicked(View v,int position);
+        void onImageClicked(View v,int position);
+    }
 }

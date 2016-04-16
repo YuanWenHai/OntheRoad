@@ -273,8 +273,15 @@ public class GoalActivity extends BaseActivity implements View.OnClickListener{
         goalImageView = (ImageView) findViewById(R.id.shared_image);
         goalImageView.setOnClickListener(this);
         initializeHeader();
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
     }
     private void initializeHeader(){

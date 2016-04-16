@@ -11,4 +11,10 @@
     <color name="accent">#FFEB3B</color>
     <color name="accent_translucent">#80FFEB3B</color>
     <color name="accent_bright">#FFF493</color>
+    <color name="grey_black">#555555</color>
+    <color name="dark_black">#111111</color>
+    <color name="middle_dark_black">#333333</color>
+    <color name="middle_black">#777777</color>
+    <color name="light_white">#eeeeee</color>
+    <color name="grey_white">#cccccc</color>
 </resources>

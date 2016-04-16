@@ -34,6 +34,7 @@ import com.will.ontheroad.adapter.NoteAdapter;
 import com.will.ontheroad.bean.MyUser;
 import com.will.ontheroad.bean.Note;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,8 +74,15 @@ public class NoteActivity extends BaseActivity {
                     return true;
             }
         });
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         getSupportActionBar().setTitle("心情");
         loadUser();
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.note_page_recycler_view);
@@ -127,7 +135,7 @@ public class NoteActivity extends BaseActivity {
     }
     private void applyPalette( final CollapsingToolbarLayout toolbar,final FloatingActionButton fab ){
         Bitmap bitmap;
-        if(!sp.getString("bg","").isEmpty()){
+        if(new File(sp.getString("bg","")).exists()){
             BitmapDrawable drawable = (BitmapDrawable) BitmapDrawable.createFromPath(sp.getString("bg",""));
             bitmap = drawable.getBitmap();
         }else{
@@ -223,9 +231,11 @@ public class NoteActivity extends BaseActivity {
     private void loadBG(){
         editor = sp.edit();
         String bg = sp.getString("bg","");
-        if(!bg.isEmpty()){
+        if(new File(sp.getString("bg","")).exists()){
             Drawable drawable = Drawable.createFromPath(bg);
             bgImageView.setImageDrawable(drawable);
+        }else{
+            bgImageView.setImageResource(R.drawable.profile_bg);
         }
     }
 }

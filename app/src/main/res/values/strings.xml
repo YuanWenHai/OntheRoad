@@ -1,5 +1,15 @@
 <resources>
     <string name="app_name">在路上</string>
+    <string name="goal">进展</string>
+    <string name="mood">心情</string>
+    <string name="news">新闻</string>
+    <string name="image">图片</string>
+    <string name="music">音乐</string>
+    <string name="laboratory">实验室</string>
+    <string name="change_password">修改密码</string>
+    <string name="about_me">关于作者</string>
+    <string name="feedback">提交反馈</string>
+    <string name="logout">退出登录</string>
     <string name="about_me_title">关于我，关于路</string>
     <string name="about_me_content">
         在写到这里之前，我曾想过很多个版本，但真正要下笔（误）时，却不知该如何开始。

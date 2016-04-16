@@ -4,6 +4,8 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -23,6 +25,8 @@ import com.will.ontheroad.adapter.BaseAdapterHelper;
 import com.will.ontheroad.adapter.QuickAdapter;
 import com.will.ontheroad.bean.Goal;
 import com.will.ontheroad.bean.MyUser;
+import com.will.ontheroad.news.NewsFragment;
+import com.will.ontheroad.photo.PhotoFragment;
 
 import java.util.List;
 
@@ -33,9 +37,10 @@ import cn.bmob.v3.listener.FindListener;
 /**
  * Created by Will on 2016/2/27.
  */
-public class MainActivity extends BaseActivity implements View.OnClickListener,AdapterView.OnItemClickListener
+public class MainActivity extends BaseActivity implements View.OnClickListener,AdapterView.OnItemClickListener,NavigationView.OnNavigationItemSelectedListener
        {
     private QuickAdapter<Goal> goalAdapter;
+    private static final String FRAGMENT_TAG = "mark";
     private ListView listView;
     private TextView userName;
     private ImageView userImage;
@@ -49,6 +54,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
     private TextView profileName;
     private DrawerLayout drawerLayout;
     private RelativeLayout loadingPage;
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -96,23 +102,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
         userName = (TextView) findViewById(R.id.main_page_toolbar_name);
         userImage = (ImageView) findViewById(R.id.main_page_toolbar_image);
         userLayout = (LinearLayout) findViewById(R.id.main_page_toolbar_user_layout);
-        profileImage = (ImageView) findViewById(R.id.profile_page_image);
-        profileName = (TextView) findViewById(R.id.profile_page_name);
+        //profileImage = (ImageView) findViewById(R.id.navigation_header_avatar);
+        //profileName = (TextView) findViewById(R.id.navigation_header_name);
         drawerLayout = (DrawerLayout) findViewById(R.id.main_page_drawer_layout);
         userLayout.setOnClickListener(this);
         listView.setOnItemClickListener(this);
+        listView.setVisibility(View.VISIBLE);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        profileImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.navigation_header_avatar);
         profileImage.setOnClickListener(this);
-        TextView profileChangePassword = (TextView) findViewById(R.id.profile_page_change_password);
-        TextView profileLogout = (TextView) findViewById(R.id.profile_page_logout);
-        TextView laboratory = (TextView) findViewById(R.id.profile_page_laboratory);
-        TextView aboutMe = (TextView) findViewById(R.id.profile_page_about_me);
-        TextView feedback = (TextView) findViewById(R.id.profile_page_feedback);
-        profileChangePassword.setOnClickListener(this);
-        profileLogout.setOnClickListener(this);
-        laboratory.setOnClickListener(this);
-        aboutMe.setOnClickListener(this);
-        feedback.setOnClickListener(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
+        profileName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.navigation_header_name);
+        profileImage.setOnClickListener(this);
+        navigationView.setNavigationItemSelectedListener(this);
+        //TextView profileChangePassword = (TextView) findViewById(R.id.profile_page_change_password);
+        //TextView profileLogout = (TextView) findViewById(R.id.profile_page_logout);
+        //TextView laboratory = (TextView) findViewById(R.id.profile_page_laboratory);
+        //TextView aboutMe = (TextView) findViewById(R.id.profile_page_about_me);
+        //TextView feedback = (TextView) findViewById(R.id.profile_page_feedback);
+        //profileChangePassword.setOnClickListener(this);
+        //profileLogout.setOnClickListener(this);
+        //laboratory.setOnClickListener(this);
+        //aboutMe.setOnClickListener(this);
+        //feedback.setOnClickListener(this);
+        toolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
         toolbar.setTitle("abc");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -148,7 +160,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
             case R.id.main_page_toolbar_user_layout:
                 drawerLayout.openDrawer(Gravity.LEFT);
                 break;
-            case R.id.profile_page_image:
+            case R.id.navigation_header_avatar:
                 startActivity(new Intent(this, UserInformationActivity.class));
                 break;
             case R.id.profile_page_change_password:
@@ -254,9 +266,53 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,A
             drawerLayout.closeDrawer(Gravity.LEFT);
         }else if (toggle){
             showToast("再按一次退出");
-            delay(3000);
+            delay(1500);
         }else{
             super.onBackPressed();
         }
     }
+   @Override
+   public boolean onNavigationItemSelected(MenuItem item){
+       FragmentManager manager = getSupportFragmentManager();
+       switch(item.getItemId()){
+           case R.id.menu_goal:
+               listView.setVisibility(View.VISIBLE);
+               toolbar.getMenu().getItem(1).setVisible(true);
+               if(manager.findFragmentByTag(FRAGMENT_TAG) != null) {
+                   getSupportFragmentManager().beginTransaction().remove(manager.findFragmentByTag(FRAGMENT_TAG)).commit();
+               }
+               drawerLayout.closeDrawers();
+               break;
+           case R.id.menu_news:
+               universalOperation();
+               getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new NewsFragment(),FRAGMENT_TAG).commit();
+               break;
+           case R.id.menu_image:
+               universalOperation();
+               getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new PhotoFragment(),FRAGMENT_TAG).commit();
+               break;
+           case R.id.menu_music:
+               break;
+           case R.id.menu_change_password:
+               startActivity(new Intent(MainActivity.this, ChangePasswordActivity.class));
+               break;
+           case R.id.menu_about_me:
+               startActivity(new Intent(this,AboutMe.class));
+               break;
+           case R.id.menu_feedback:
+               startActivity(new Intent(this,FeedbackActivity.class));
+               break;
+           case R.id.menu_logout:
+               BmobUser.logOut(this);
+               startActivity(new Intent(this, LoginActivity.class));
+               finish();
+               break;
+       }
+       return true;
+   }
+       private void universalOperation(){
+           drawerLayout.closeDrawers();
+           toolbar.getMenu().getItem(1).setVisible(false);
+           listView.setVisibility(View.GONE);
+       }
 }
